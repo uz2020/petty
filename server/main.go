@@ -5,6 +5,7 @@ import (
 	"google.golang.org/grpc"
 	"log"
 	"net"
+	"os"
 	pb "t/pet"
 
 	"go.etcd.io/etcd/client/v3"
@@ -13,7 +14,6 @@ import (
 )
 
 const (
-	port    = ":50051"
 	service = "foo/bar/my-service"
 )
 
@@ -22,6 +22,7 @@ type profileServer struct {
 }
 
 func (*profileServer) GetProfile(ctx context.Context, request *pb.ProfileRequest) (*pb.ProfileReply, error) {
+	log.Println("get profile")
 	reply := &pb.ProfileReply{}
 	switch request.PetId {
 	case "abc":
@@ -35,6 +36,13 @@ func (*profileServer) GetProfile(ctx context.Context, request *pb.ProfileRequest
 }
 
 func main() {
+	if len(os.Args) == 0 {
+		log.Println("no port")
+		return
+	}
+
+	port := ":" + os.Args[1]
+
 	cli, err := clientv3.NewFromURL("http://localhost:2379")
 	if err != nil {
 		log.Fatalf("failed to connect client: %v", err)
@@ -56,7 +64,6 @@ func main() {
 	}
 	s := grpc.NewServer()
 	pb.RegisterProfileServer(s, &profileServer{})
-	log.Println("Serving gRPC on 0.0.0.0" + port)
 	if err := s.Serve(listen); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
