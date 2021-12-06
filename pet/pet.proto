@@ -1,0 +1,13 @@
+syntax = "proto3";
+option go_package = "t/pet";
+package pet;
+
+service Profile {
+  rpc GetProfile (ProfileRequest) returns (ProfileReply) {}
+}
+message ProfileRequest {
+  string petId = 1;
+}
+message ProfileReply {
+  string name = 1;
+}
