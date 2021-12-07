@@ -97,5 +97,5 @@ var Profile_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "pet/pet.proto",
+	Metadata: "pb/pet/pet.proto",
 }

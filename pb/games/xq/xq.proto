@@ -1,0 +1,11 @@
+syntax = "proto3";
+option go_package = "https://github.com/uz2020/petty/pb/games/xq";
+package xq;
+
+service Game {
+  rpc GetTables (TablesRequest) returns (TablesReply) {}
+}
+message TablesRequest {
+}
+message TablesReply {
+}

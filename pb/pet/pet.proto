@@ -1,5 +1,5 @@
 syntax = "proto3";
-option go_package = "t/pet";
+option go_package = "https://github.com/uz2020/petty/pb/pet";
 package pet;
 
 service Profile {

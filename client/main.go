@@ -6,8 +6,8 @@ import (
 	"os"
 	"time"
 
+	pb "github.com/uz2020/petty/pb/pet"
 	"google.golang.org/grpc"
-	pb "t/pet"
 
 	"go.etcd.io/etcd/client/v3"
 	resolver "go.etcd.io/etcd/client/v3/naming/resolver"
