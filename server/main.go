@@ -36,7 +36,7 @@ func (*profileServer) GetProfile(ctx context.Context, request *pb.ProfileRequest
 }
 
 func main() {
-	if len(os.Args) == 0 {
+	if len(os.Args) < 2 {
 		log.Println("no port")
 		return
 	}
