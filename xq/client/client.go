@@ -31,8 +31,56 @@ func NewClient(ctx context.Context) *Client {
 	return cli
 }
 
-func (cli *Client) handleCmd(cmd string) {
+func login(cli *Client, argv []string) {
+	if len(argv) < 3 {
+		return
+	}
+	name := argv[1]
+	passwd := argv[2]
+
+	stream, err := cli.gc.Login(cli.ctx, &pb.LoginRequest{
+		Username: name,
+		Passwd:   passwd,
+	})
+
+	if err != nil {
+		log.Fatalln("login err", err)
+		return
+	}
+
+	done := make(chan bool)
+
+	go func() {
+		for {
+			resp, err := stream.Recv()
+			if err == io.EOF {
+				close(done)
+				return
+			}
+			if err != nil {
+				log.Printf("stream err %v", err)
+				return
+			}
+			fmt.Println(resp.Time)
+		}
+	}()
+
+	<-done
+	log.Println("finished")
+}
+
+func (cli *Client) handleCmd(line string) {
+	argv := strings.Fields(line)
+
+	if len(argv) == 0 {
+		return
+	}
+
+	cmd := argv[0]
+
 	switch cmd {
+	case "login":
+		go login(cli, argv)
 	case "tables":
 		reply, err := cli.gc.GetTables(cli.ctx, &pb.TablesRequest{})
 		if err != nil {

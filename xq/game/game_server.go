@@ -2,6 +2,7 @@ package game
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"net"
@@ -28,10 +29,16 @@ func (*GameServer) GetTables(ctx context.Context, request *pb.TablesRequest) (*p
 	return r, nil
 }
 
-func (GameServer) MyStatus(r *pb.MyStatusRequest, srv pb.Game_MyStatusServer) error {
+func (*GameServer) Login(r *pb.LoginRequest, srv pb.Game_LoginServer) error {
 	ctx := srv.Context()
+	name := r.Username
+	passwd := r.Passwd
 
-	for {
+	if name != "a" || passwd != "a" {
+		return errors.New("invalid username or password")
+	}
+
+	for i := 0; i < 5; i++ {
 		select {
 		case <-ctx.Done():
 			return ctx.Err()
@@ -41,7 +48,23 @@ func (GameServer) MyStatus(r *pb.MyStatusRequest, srv pb.Game_MyStatusServer) er
 		srv.Send(&pb.MyStatusResponse{Time: now})
 		time.Sleep(time.Second)
 	}
+	return nil
+}
 
+func (*GameServer) MyStatus(r *pb.MyStatusRequest, srv pb.Game_MyStatusServer) error {
+	ctx := srv.Context()
+
+	for i := 0; i < 5; i++ {
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		default:
+		}
+		now := time.Now().Unix()
+		srv.Send(&pb.MyStatusResponse{Time: now})
+		time.Sleep(time.Second)
+	}
+	return nil
 }
 
 func (*GameServer) Shutdown(ctx context.Context) error {

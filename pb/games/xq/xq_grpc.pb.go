@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion7
 type GameClient interface {
 	GetTables(ctx context.Context, in *TablesRequest, opts ...grpc.CallOption) (*TablesReply, error)
 	MyStatus(ctx context.Context, in *MyStatusRequest, opts ...grpc.CallOption) (Game_MyStatusClient, error)
+	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (Game_LoginClient, error)
 }
 
 type gameClient struct {
@@ -71,12 +72,45 @@ func (x *gameMyStatusClient) Recv() (*MyStatusResponse, error) {
 	return m, nil
 }
 
+func (c *gameClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (Game_LoginClient, error) {
+	stream, err := c.cc.NewStream(ctx, &Game_ServiceDesc.Streams[1], "/xq.Game/Login", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &gameLoginClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type Game_LoginClient interface {
+	Recv() (*MyStatusResponse, error)
+	grpc.ClientStream
+}
+
+type gameLoginClient struct {
+	grpc.ClientStream
+}
+
+func (x *gameLoginClient) Recv() (*MyStatusResponse, error) {
+	m := new(MyStatusResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // GameServer is the server API for Game service.
 // All implementations must embed UnimplementedGameServer
 // for forward compatibility
 type GameServer interface {
 	GetTables(context.Context, *TablesRequest) (*TablesReply, error)
 	MyStatus(*MyStatusRequest, Game_MyStatusServer) error
+	Login(*LoginRequest, Game_LoginServer) error
 	mustEmbedUnimplementedGameServer()
 }
 
@@ -89,6 +123,9 @@ func (UnimplementedGameServer) GetTables(context.Context, *TablesRequest) (*Tabl
 }
 func (UnimplementedGameServer) MyStatus(*MyStatusRequest, Game_MyStatusServer) error {
 	return status.Errorf(codes.Unimplemented, "method MyStatus not implemented")
+}
+func (UnimplementedGameServer) Login(*LoginRequest, Game_LoginServer) error {
+	return status.Errorf(codes.Unimplemented, "method Login not implemented")
 }
 func (UnimplementedGameServer) mustEmbedUnimplementedGameServer() {}
 
@@ -142,6 +179,27 @@ func (x *gameMyStatusServer) Send(m *MyStatusResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
+func _Game_Login_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(LoginRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(GameServer).Login(m, &gameLoginServer{stream})
+}
+
+type Game_LoginServer interface {
+	Send(*MyStatusResponse) error
+	grpc.ServerStream
+}
+
+type gameLoginServer struct {
+	grpc.ServerStream
+}
+
+func (x *gameLoginServer) Send(m *MyStatusResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
 // Game_ServiceDesc is the grpc.ServiceDesc for Game service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -158,6 +216,11 @@ var Game_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "MyStatus",
 			Handler:       _Game_MyStatus_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "Login",
+			Handler:       _Game_Login_Handler,
 			ServerStreams: true,
 		},
 	},

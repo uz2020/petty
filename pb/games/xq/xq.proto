@@ -4,7 +4,8 @@ package xq;
 
 service Game {
   rpc GetTables (TablesRequest) returns (TablesReply) {}
-  rpc MyStatus (MyStatusRequest) returns (stream MyStatusResponse) {}  
+  rpc MyStatus (MyStatusRequest) returns (stream MyStatusResponse) {}
+  rpc Login (LoginRequest) returns (stream MyStatusResponse) {}
 }
 
 message TablesRequest {}
@@ -15,4 +16,9 @@ message TablesReply {
 message MyStatusRequest {}
 message MyStatusResponse {
   int64 time = 1;
+}
+
+message LoginRequest {
+  string username = 1;
+  string passwd = 2;
 }
