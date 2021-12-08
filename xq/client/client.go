@@ -18,10 +18,11 @@ import (
 )
 
 type Client struct {
-	ctx  context.Context
-	conf config.Conf
-	ecli *ecv3.Client
-	gc   pb.GameClient
+	ctx   context.Context
+	conf  config.Conf
+	ecli  *ecv3.Client
+	gc    pb.GameClient
+	token string
 }
 
 func NewClient(ctx context.Context) *Client {
@@ -38,35 +39,22 @@ func login(cli *Client, argv []string) {
 	name := argv[1]
 	passwd := argv[2]
 
-	stream, err := cli.gc.Login(cli.ctx, &pb.LoginRequest{
+	resp, err := cli.gc.Login(cli.ctx, &pb.LoginRequest{
 		Username: name,
 		Passwd:   passwd,
 	})
 
 	if err != nil {
-		log.Fatalln("login err", err)
+		log.Println("login err", err)
 		return
 	}
 
-	done := make(chan bool)
+	if !resp.Success {
+		log.Println("login failed")
+		return
+	}
 
-	go func() {
-		for {
-			resp, err := stream.Recv()
-			if err == io.EOF {
-				close(done)
-				return
-			}
-			if err != nil {
-				log.Printf("stream err %v", err)
-				return
-			}
-			fmt.Println(resp.Time)
-		}
-	}()
-
-	<-done
-	log.Println("finished")
+	cli.token = resp.Token
 }
 
 func (cli *Client) handleCmd(line string) {
@@ -79,6 +67,10 @@ func (cli *Client) handleCmd(line string) {
 	cmd := argv[0]
 
 	switch cmd {
+	case "join-table":
+	case "leave-table":
+	case "start-game":
+	case "move":
 	case "login":
 		go login(cli, argv)
 	case "tables":

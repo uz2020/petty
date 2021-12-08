@@ -2,7 +2,6 @@ package game
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log"
 	"net"
@@ -29,26 +28,8 @@ func (*GameServer) GetTables(ctx context.Context, request *pb.TablesRequest) (*p
 	return r, nil
 }
 
-func (*GameServer) Login(r *pb.LoginRequest, srv pb.Game_LoginServer) error {
-	ctx := srv.Context()
-	name := r.Username
-	passwd := r.Passwd
-
-	if name != "a" || passwd != "a" {
-		return errors.New("invalid username or password")
-	}
-
-	for i := 0; i < 5; i++ {
-		select {
-		case <-ctx.Done():
-			return ctx.Err()
-		default:
-		}
-		now := time.Now().Unix()
-		srv.Send(&pb.MyStatusResponse{Time: now})
-		time.Sleep(time.Second)
-	}
-	return nil
+func (*GameServer) Login(ctx context.Context, in *pb.LoginRequest) (*pb.LoginResponse, error) {
+	return nil, nil
 }
 
 func (*GameServer) MyStatus(r *pb.MyStatusRequest, srv pb.Game_MyStatusServer) error {
@@ -65,6 +46,22 @@ func (*GameServer) MyStatus(r *pb.MyStatusRequest, srv pb.Game_MyStatusServer) e
 		time.Sleep(time.Second)
 	}
 	return nil
+}
+
+func (*GameServer) JoinTable(ctx context.Context, in *pb.JoinTableRequest) (*pb.JoinTableResponse, error) {
+	return nil, nil
+}
+
+func (*GameServer) LeaveTable(ctx context.Context, in *pb.LeaveTableRequest) (*pb.LeaveTableResponse, error) {
+	return nil, nil
+}
+
+func (*GameServer) StartGame(ctx context.Context, in *pb.StartGameRequest) (*pb.StartGameResponse, error) {
+	return nil, nil
+}
+
+func (*GameServer) Move(ctx context.Context, in *pb.MoveRequest) (*pb.MoveResponse, error) {
+	return nil, nil
 }
 
 func (*GameServer) Shutdown(ctx context.Context) error {

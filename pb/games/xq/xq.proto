@@ -3,9 +3,31 @@ option go_package = "https://github.com/uz2020/petty/pb/games/xq";
 package xq;
 
 service Game {
-  rpc GetTables (TablesRequest) returns (TablesReply) {}
+  rpc Login (LoginRequest) returns (LoginResponse) {}
+  
   rpc MyStatus (MyStatusRequest) returns (stream MyStatusResponse) {}
-  rpc Login (LoginRequest) returns (stream MyStatusResponse) {}
+
+  rpc GetTables (TablesRequest) returns (TablesReply) {}
+  rpc JoinTable (JoinTableRequest) returns (JoinTableResponse) {}
+  rpc LeaveTable (LeaveTableRequest) returns (LeaveTableResponse) {}
+  
+  rpc StartGame (StartGameRequest) returns (StartGameResponse) {}
+  rpc Move (MoveRequest) returns (MoveResponse) {}
+}
+
+message LoginRequest {
+  string username = 1;
+  string passwd = 2;
+}
+message LoginResponse {
+  bool success = 1;
+  string token = 2;
+}
+
+message MyStatusRequest {}
+message MyStatusResponse {
+  int64 time = 1;
+  int64 move = 2;
 }
 
 message TablesRequest {}
@@ -13,12 +35,30 @@ message TablesReply {
   repeated int64 tableIds = 1;
 }
 
-message MyStatusRequest {}
-message MyStatusResponse {
-  int64 time = 1;
+message JoinTableRequest {
+  int64 tableId = 1;
+}
+message JoinTableResponse {
+  bool success = 1;
+}
+message LeaveTableRequest {
+  int64 tableId = 1;
+}
+message LeaveTableResponse {
+  bool success = 1;
 }
 
-message LoginRequest {
-  string username = 1;
-  string passwd = 2;
+message StartGameRequest {
+  int64 tableId = 1;
+}
+message StartGameResponse {
+  bool success = 1;
+}
+
+message MoveRequest {
+  int64 tableId = 1;
+  int64 move = 2;
+}
+message MoveResponse {
+  bool success = 1;
 }

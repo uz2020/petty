@@ -18,9 +18,13 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type GameClient interface {
-	GetTables(ctx context.Context, in *TablesRequest, opts ...grpc.CallOption) (*TablesReply, error)
+	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	MyStatus(ctx context.Context, in *MyStatusRequest, opts ...grpc.CallOption) (Game_MyStatusClient, error)
-	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (Game_LoginClient, error)
+	GetTables(ctx context.Context, in *TablesRequest, opts ...grpc.CallOption) (*TablesReply, error)
+	JoinTable(ctx context.Context, in *JoinTableRequest, opts ...grpc.CallOption) (*JoinTableResponse, error)
+	LeaveTable(ctx context.Context, in *LeaveTableRequest, opts ...grpc.CallOption) (*LeaveTableResponse, error)
+	StartGame(ctx context.Context, in *StartGameRequest, opts ...grpc.CallOption) (*StartGameResponse, error)
+	Move(ctx context.Context, in *MoveRequest, opts ...grpc.CallOption) (*MoveResponse, error)
 }
 
 type gameClient struct {
@@ -31,9 +35,9 @@ func NewGameClient(cc grpc.ClientConnInterface) GameClient {
 	return &gameClient{cc}
 }
 
-func (c *gameClient) GetTables(ctx context.Context, in *TablesRequest, opts ...grpc.CallOption) (*TablesReply, error) {
-	out := new(TablesReply)
-	err := c.cc.Invoke(ctx, "/xq.Game/GetTables", in, out, opts...)
+func (c *gameClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error) {
+	out := new(LoginResponse)
+	err := c.cc.Invoke(ctx, "/xq.Game/Login", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -72,45 +76,62 @@ func (x *gameMyStatusClient) Recv() (*MyStatusResponse, error) {
 	return m, nil
 }
 
-func (c *gameClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (Game_LoginClient, error) {
-	stream, err := c.cc.NewStream(ctx, &Game_ServiceDesc.Streams[1], "/xq.Game/Login", opts...)
+func (c *gameClient) GetTables(ctx context.Context, in *TablesRequest, opts ...grpc.CallOption) (*TablesReply, error) {
+	out := new(TablesReply)
+	err := c.cc.Invoke(ctx, "/xq.Game/GetTables", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &gameLoginClient{stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
+	return out, nil
 }
 
-type Game_LoginClient interface {
-	Recv() (*MyStatusResponse, error)
-	grpc.ClientStream
-}
-
-type gameLoginClient struct {
-	grpc.ClientStream
-}
-
-func (x *gameLoginClient) Recv() (*MyStatusResponse, error) {
-	m := new(MyStatusResponse)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
+func (c *gameClient) JoinTable(ctx context.Context, in *JoinTableRequest, opts ...grpc.CallOption) (*JoinTableResponse, error) {
+	out := new(JoinTableResponse)
+	err := c.cc.Invoke(ctx, "/xq.Game/JoinTable", in, out, opts...)
+	if err != nil {
 		return nil, err
 	}
-	return m, nil
+	return out, nil
+}
+
+func (c *gameClient) LeaveTable(ctx context.Context, in *LeaveTableRequest, opts ...grpc.CallOption) (*LeaveTableResponse, error) {
+	out := new(LeaveTableResponse)
+	err := c.cc.Invoke(ctx, "/xq.Game/LeaveTable", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *gameClient) StartGame(ctx context.Context, in *StartGameRequest, opts ...grpc.CallOption) (*StartGameResponse, error) {
+	out := new(StartGameResponse)
+	err := c.cc.Invoke(ctx, "/xq.Game/StartGame", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *gameClient) Move(ctx context.Context, in *MoveRequest, opts ...grpc.CallOption) (*MoveResponse, error) {
+	out := new(MoveResponse)
+	err := c.cc.Invoke(ctx, "/xq.Game/Move", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 // GameServer is the server API for Game service.
 // All implementations must embed UnimplementedGameServer
 // for forward compatibility
 type GameServer interface {
-	GetTables(context.Context, *TablesRequest) (*TablesReply, error)
+	Login(context.Context, *LoginRequest) (*LoginResponse, error)
 	MyStatus(*MyStatusRequest, Game_MyStatusServer) error
-	Login(*LoginRequest, Game_LoginServer) error
+	GetTables(context.Context, *TablesRequest) (*TablesReply, error)
+	JoinTable(context.Context, *JoinTableRequest) (*JoinTableResponse, error)
+	LeaveTable(context.Context, *LeaveTableRequest) (*LeaveTableResponse, error)
+	StartGame(context.Context, *StartGameRequest) (*StartGameResponse, error)
+	Move(context.Context, *MoveRequest) (*MoveResponse, error)
 	mustEmbedUnimplementedGameServer()
 }
 
@@ -118,14 +139,26 @@ type GameServer interface {
 type UnimplementedGameServer struct {
 }
 
-func (UnimplementedGameServer) GetTables(context.Context, *TablesRequest) (*TablesReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetTables not implemented")
+func (UnimplementedGameServer) Login(context.Context, *LoginRequest) (*LoginResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
 }
 func (UnimplementedGameServer) MyStatus(*MyStatusRequest, Game_MyStatusServer) error {
 	return status.Errorf(codes.Unimplemented, "method MyStatus not implemented")
 }
-func (UnimplementedGameServer) Login(*LoginRequest, Game_LoginServer) error {
-	return status.Errorf(codes.Unimplemented, "method Login not implemented")
+func (UnimplementedGameServer) GetTables(context.Context, *TablesRequest) (*TablesReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetTables not implemented")
+}
+func (UnimplementedGameServer) JoinTable(context.Context, *JoinTableRequest) (*JoinTableResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method JoinTable not implemented")
+}
+func (UnimplementedGameServer) LeaveTable(context.Context, *LeaveTableRequest) (*LeaveTableResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LeaveTable not implemented")
+}
+func (UnimplementedGameServer) StartGame(context.Context, *StartGameRequest) (*StartGameResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StartGame not implemented")
+}
+func (UnimplementedGameServer) Move(context.Context, *MoveRequest) (*MoveResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Move not implemented")
 }
 func (UnimplementedGameServer) mustEmbedUnimplementedGameServer() {}
 
@@ -140,20 +173,20 @@ func RegisterGameServer(s grpc.ServiceRegistrar, srv GameServer) {
 	s.RegisterService(&Game_ServiceDesc, srv)
 }
 
-func _Game_GetTables_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(TablesRequest)
+func _Game_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LoginRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GameServer).GetTables(ctx, in)
+		return srv.(GameServer).Login(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/xq.Game/GetTables",
+		FullMethod: "/xq.Game/Login",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GameServer).GetTables(ctx, req.(*TablesRequest))
+		return srv.(GameServer).Login(ctx, req.(*LoginRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -179,25 +212,94 @@ func (x *gameMyStatusServer) Send(m *MyStatusResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func _Game_Login_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(LoginRequest)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
+func _Game_GetTables_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TablesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
 	}
-	return srv.(GameServer).Login(m, &gameLoginServer{stream})
+	if interceptor == nil {
+		return srv.(GameServer).GetTables(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/xq.Game/GetTables",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GameServer).GetTables(ctx, req.(*TablesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
-type Game_LoginServer interface {
-	Send(*MyStatusResponse) error
-	grpc.ServerStream
+func _Game_JoinTable_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(JoinTableRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GameServer).JoinTable(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/xq.Game/JoinTable",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GameServer).JoinTable(ctx, req.(*JoinTableRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
-type gameLoginServer struct {
-	grpc.ServerStream
+func _Game_LeaveTable_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LeaveTableRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GameServer).LeaveTable(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/xq.Game/LeaveTable",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GameServer).LeaveTable(ctx, req.(*LeaveTableRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
-func (x *gameLoginServer) Send(m *MyStatusResponse) error {
-	return x.ServerStream.SendMsg(m)
+func _Game_StartGame_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StartGameRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GameServer).StartGame(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/xq.Game/StartGame",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GameServer).StartGame(ctx, req.(*StartGameRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Game_Move_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MoveRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GameServer).Move(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/xq.Game/Move",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GameServer).Move(ctx, req.(*MoveRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 // Game_ServiceDesc is the grpc.ServiceDesc for Game service.
@@ -208,19 +310,34 @@ var Game_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*GameServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
+			MethodName: "Login",
+			Handler:    _Game_Login_Handler,
+		},
+		{
 			MethodName: "GetTables",
 			Handler:    _Game_GetTables_Handler,
+		},
+		{
+			MethodName: "JoinTable",
+			Handler:    _Game_JoinTable_Handler,
+		},
+		{
+			MethodName: "LeaveTable",
+			Handler:    _Game_LeaveTable_Handler,
+		},
+		{
+			MethodName: "StartGame",
+			Handler:    _Game_StartGame_Handler,
+		},
+		{
+			MethodName: "Move",
+			Handler:    _Game_Move_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
 		{
 			StreamName:    "MyStatus",
 			Handler:       _Game_MyStatus_Handler,
-			ServerStreams: true,
-		},
-		{
-			StreamName:    "Login",
-			Handler:       _Game_Login_Handler,
 			ServerStreams: true,
 		},
 	},
