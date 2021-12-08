@@ -4,8 +4,15 @@ package xq;
 
 service Game {
   rpc GetTables (TablesRequest) returns (TablesReply) {}
+  rpc MyStatus (MyStatusRequest) returns (stream MyStatusResponse) {}  
 }
-message TablesRequest {
-}
+
+message TablesRequest {}
 message TablesReply {
+  repeated int64 tableIds = 1;
+}
+
+message MyStatusRequest {}
+message MyStatusResponse {
+  int64 time = 1;
 }

@@ -19,6 +19,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type GameClient interface {
 	GetTables(ctx context.Context, in *TablesRequest, opts ...grpc.CallOption) (*TablesReply, error)
+	MyStatus(ctx context.Context, in *MyStatusRequest, opts ...grpc.CallOption) (Game_MyStatusClient, error)
 }
 
 type gameClient struct {
@@ -38,11 +39,44 @@ func (c *gameClient) GetTables(ctx context.Context, in *TablesRequest, opts ...g
 	return out, nil
 }
 
+func (c *gameClient) MyStatus(ctx context.Context, in *MyStatusRequest, opts ...grpc.CallOption) (Game_MyStatusClient, error) {
+	stream, err := c.cc.NewStream(ctx, &Game_ServiceDesc.Streams[0], "/xq.Game/MyStatus", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &gameMyStatusClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type Game_MyStatusClient interface {
+	Recv() (*MyStatusResponse, error)
+	grpc.ClientStream
+}
+
+type gameMyStatusClient struct {
+	grpc.ClientStream
+}
+
+func (x *gameMyStatusClient) Recv() (*MyStatusResponse, error) {
+	m := new(MyStatusResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // GameServer is the server API for Game service.
 // All implementations must embed UnimplementedGameServer
 // for forward compatibility
 type GameServer interface {
 	GetTables(context.Context, *TablesRequest) (*TablesReply, error)
+	MyStatus(*MyStatusRequest, Game_MyStatusServer) error
 	mustEmbedUnimplementedGameServer()
 }
 
@@ -52,6 +86,9 @@ type UnimplementedGameServer struct {
 
 func (UnimplementedGameServer) GetTables(context.Context, *TablesRequest) (*TablesReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetTables not implemented")
+}
+func (UnimplementedGameServer) MyStatus(*MyStatusRequest, Game_MyStatusServer) error {
+	return status.Errorf(codes.Unimplemented, "method MyStatus not implemented")
 }
 func (UnimplementedGameServer) mustEmbedUnimplementedGameServer() {}
 
@@ -84,6 +121,27 @@ func _Game_GetTables_Handler(srv interface{}, ctx context.Context, dec func(inte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Game_MyStatus_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(MyStatusRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(GameServer).MyStatus(m, &gameMyStatusServer{stream})
+}
+
+type Game_MyStatusServer interface {
+	Send(*MyStatusResponse) error
+	grpc.ServerStream
+}
+
+type gameMyStatusServer struct {
+	grpc.ServerStream
+}
+
+func (x *gameMyStatusServer) Send(m *MyStatusResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
 // Game_ServiceDesc is the grpc.ServiceDesc for Game service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -96,6 +154,12 @@ var Game_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Game_GetTables_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "MyStatus",
+			Handler:       _Game_MyStatus_Handler,
+			ServerStreams: true,
+		},
+	},
 	Metadata: "pb/games/xq/xq.proto",
 }
