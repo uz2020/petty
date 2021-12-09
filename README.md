@@ -1,9 +1,9 @@
 # petty
 
-## 部署etcd
+## 部署etcd,mysql,redis
 
 ```
-cd etcd
+cd docker
 docker-compose up -d
 ```
 
@@ -38,6 +38,10 @@ sh run-cli.sh
 ```
 
 ```
--> tables
+# 登录 (username/password)
 -> login a a
+# 注册 (username/password)
+-> register a a
+# 查看table列表
+-> tables
 ```
