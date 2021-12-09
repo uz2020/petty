@@ -77,6 +77,26 @@ func (gs *GameServer) auth(ctx context.Context, user *db.TbUser) error {
 	return nil
 }
 
+func (gs *GameServer) CreateTable(ctx context.Context, in *pb.CreateTableRequest) (*pb.CreateTableResponse, error) {
+	user := db.TbUser{}
+	out := &pb.CreateTableResponse{}
+
+	if err := gs.auth(ctx, &user); err != nil {
+		return nil, err
+	}
+
+	log.Printf("user: %v", user)
+
+	table := db.TbTable{}
+	table.CreatedAt = time.Now()
+	table.Name = in.Name
+	table.UserId = user.UserId
+	table.TableId = utils.GenUserId()
+	result := gs.dbConn.Create(&table)
+	err := result.Error
+	return out, err
+}
+
 func (gs *GameServer) GetTables(ctx context.Context, in *pb.TablesRequest) (*pb.TablesReply, error) {
 	user := db.TbUser{}
 	out := &pb.TablesReply{}
@@ -153,20 +173,40 @@ func (*GameServer) MyStatus(r *pb.MyStatusRequest, srv pb.Game_MyStatusServer) e
 	return nil
 }
 
-func (*GameServer) JoinTable(ctx context.Context, in *pb.JoinTableRequest) (*pb.JoinTableResponse, error) {
-	return nil, nil
+func (gs *GameServer) JoinTable(ctx context.Context, in *pb.JoinTableRequest) (*pb.JoinTableResponse, error) {
+	user := db.TbUser{}
+	out := &pb.JoinTableResponse{}
+	if err := gs.auth(ctx, &user); err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
-func (*GameServer) LeaveTable(ctx context.Context, in *pb.LeaveTableRequest) (*pb.LeaveTableResponse, error) {
-	return nil, nil
+func (gs *GameServer) LeaveTable(ctx context.Context, in *pb.LeaveTableRequest) (*pb.LeaveTableResponse, error) {
+	user := db.TbUser{}
+	out := &pb.LeaveTableResponse{}
+	if err := gs.auth(ctx, &user); err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
-func (*GameServer) StartGame(ctx context.Context, in *pb.StartGameRequest) (*pb.StartGameResponse, error) {
-	return nil, nil
+func (gs *GameServer) StartGame(ctx context.Context, in *pb.StartGameRequest) (*pb.StartGameResponse, error) {
+	user := db.TbUser{}
+	out := &pb.StartGameResponse{}
+	if err := gs.auth(ctx, &user); err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
-func (*GameServer) Move(ctx context.Context, in *pb.MoveRequest) (*pb.MoveResponse, error) {
-	return nil, nil
+func (gs *GameServer) Move(ctx context.Context, in *pb.MoveRequest) (*pb.MoveResponse, error) {
+	user := db.TbUser{}
+	out := &pb.MoveResponse{}
+	if err := gs.auth(ctx, &user); err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (*GameServer) Shutdown(ctx context.Context) error {

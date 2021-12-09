@@ -74,6 +74,24 @@ func register(cli *Client, argv []string) {
 	log.Println("register success")
 }
 
+func createTable(cli *Client, argv []string) {
+	if len(argv) < 2 {
+		return
+	}
+	name := argv[1]
+
+	_, err := cli.gc.CreateTable(cli.ctx, &pb.CreateTableRequest{
+		Name: name,
+	})
+
+	if err != nil {
+		log.Println("create table err", err)
+		return
+	}
+
+	log.Println("create table success")
+}
+
 func (cli *Client) handleCmd(line string) {
 	argv := strings.Fields(line)
 
@@ -88,6 +106,7 @@ func (cli *Client) handleCmd(line string) {
 		go register(cli, argv)
 	case "guest-login":
 	case "create-table":
+		go createTable(cli, argv)
 	case "join-table":
 	case "leave-table":
 	case "start-game":

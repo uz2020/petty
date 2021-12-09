@@ -5,5 +5,5 @@ pb: pb/games/xq/xq.proto
     --go-grpc_out=. --go-grpc_opt=paths=source_relative \
     pb/pet/pet.proto pb/games/xq/xq.proto
 
-xq/xq: xq/game/game_server.go xq/client/client.go xq/main.go
+xq/xq:
 	$(MAKE) -C xq

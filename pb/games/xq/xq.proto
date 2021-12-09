@@ -74,4 +74,6 @@ message MoveResponse {}
 message CreateTableRequest {
   string name = 1;
 }
-message CreateTableResponse {}
+message CreateTableResponse {
+  int64 tableId = 1;
+}

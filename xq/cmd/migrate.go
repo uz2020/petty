@@ -24,6 +24,20 @@ func initTable() {
 			panic(err)
 		}
 	}
+
+	if !d.HasTable(&db.TbTable{}) {
+		err := d.CreateTable(&db.TbTable{})
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	if !d.HasTable(&db.TbGame{}) {
+		err := d.CreateTable(&db.TbGame{})
+		if err != nil {
+			panic(err)
+		}
+	}
 }
 
 var migrateCmd = &cobra.Command{
