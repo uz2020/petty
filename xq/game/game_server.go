@@ -13,50 +13,27 @@ import (
 
 	pb "github.com/uz2020/petty/pb/games/xq"
 	"github.com/uz2020/petty/xq/config"
-	"gorm.io/driver/mysql"
+
+	"github.com/uz2020/petty/xq/db"
 	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
-	"gorm.io/gorm/schema"
-	"gorm.io/plugin/dbresolver"
 )
 
 type GameServer struct {
 	pb.UnimplementedGameServer
-	conf config.Conf
-	ctx  context.Context
-	db   *gorm.DB
+	conf   config.Conf
+	ctx    context.Context
+	dbConn *gorm.DB
 }
 
 func (gs *GameServer) init(ctx context.Context) {
 	gs.ctx = ctx
 	gs.conf.Init()
 	conf := &gs.conf
-	dsn := fmt.Sprintf("%s:%s@(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local&timeout=3s",
-		conf.MysqlUser, conf.MysqlPasswd, conf.MysqlAddr, conf.MysqlAddr, conf.MysqlDb)
-
-	defaultLogger := logger.Default.LogMode(logger.Silent)
-	gormConfig := &gorm.Config{
-		NamingStrategy: schema.NamingStrategy{
-			SingularTable: true,
-		},
-		DisableForeignKeyConstraintWhenMigrating: true,
-		Logger:                                   defaultLogger,
-		SkipDefaultTransaction:                   true,
-	}
-
-	if db, err := gorm.Open(mysql.Open(dsn), gormConfig); err == nil {
-		err = db.Use(dbresolver.Register(dbresolver.Config{}).
-			SetConnMaxLifetime(1 * time.Hour).
-			SetMaxIdleConns(100).
-			SetMaxOpenConns(1000))
-		if err != nil {
-			panic(err)
-		}
-		gs.db = db
-	} else {
+	dbConn, err := db.InitDb(conf.MysqlUser, conf.MysqlPasswd, conf.MysqlAddr, conf.MysqlDb)
+	if err != nil {
 		panic(err)
 	}
-
+	gs.dbConn = dbConn
 	registerService(conf.ListenAddr, conf.Service, conf.EtcdUrl, gs)
 }
 
