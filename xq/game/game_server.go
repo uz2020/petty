@@ -55,23 +55,20 @@ func (gs *GameServer) Register(ctx context.Context, in *pb.RegisterRequest) (*pb
 	user := db.TbUser{}
 	result := gs.dbConn.First(&user, "username = ?", in.Username)
 	err := result.Error
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			user.Username = in.Username
-			user.Password = in.Passwd
-			user.CreatedAt = time.Now()
-			user.UserId = utils.GenUserId()
-
-			result := gs.dbConn.Create(&user)
-			err := result.Error
-			if result.Error != nil {
-				return nil, err
-			}
-			return out, nil
-		}
+	if err == nil {
+		return nil, errors.New("username already registered, choose another one")
+	}
+	if !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, err
 	}
-	return nil, errors.New("username already registered, choose another one")
+
+	user.Username = in.Username
+	user.Password = in.Passwd
+	user.CreatedAt = time.Now()
+	user.UserId = utils.GenUserId()
+	result = gs.dbConn.Create(&user)
+	err = result.Error
+	return out, err
 }
 
 func (gs *GameServer) Login(ctx context.Context, in *pb.LoginRequest) (*pb.LoginResponse, error) {
@@ -86,8 +83,18 @@ func (gs *GameServer) Login(ctx context.Context, in *pb.LoginRequest) (*pb.Login
 		}
 		return nil, err
 	}
+	token, err := utils.NewRandomString()
 
-	out.Token = "yes"
+	if err != nil {
+		return nil, err
+	}
+	out.Token = *token
+
+	// 设置redis cookie
+	err = gs.redisConn.Set(gs.ctx, fmt.Sprintf("user_sid_%s", out.Token), user.UserId, time.Hour*24*7).Err()
+	if err != nil {
+		return nil, err
+	}
 	return out, nil
 }
 

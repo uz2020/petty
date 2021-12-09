@@ -86,6 +86,7 @@ func (cli *Client) handleCmd(line string) {
 	case "register":
 		go register(cli, argv)
 	case "guest-login":
+	case "create-table":
 	case "join-table":
 	case "leave-table":
 	case "start-game":

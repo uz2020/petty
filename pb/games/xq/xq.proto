@@ -10,6 +10,7 @@ service Game {
   rpc MyStatus (MyStatusRequest) returns (stream MyStatusResponse) {}
 
   rpc GetTables (TablesRequest) returns (TablesReply) {}
+  rpc CreateTable (CreateTableRequest) returns (CreateTableResponse) {}
   rpc JoinTable (JoinTableRequest) returns (JoinTableResponse) {}
   rpc LeaveTable (LeaveTableRequest) returns (LeaveTableResponse) {}
   
@@ -34,10 +35,8 @@ message RegisterResponse {}
 
 message GuestLoginRequest {}
 message GuestLoginResponse {
-  bool success = 1;
   string token = 2;
 }
-
 
 message MyStatusRequest {}
 message MyStatusResponse {
@@ -53,27 +52,24 @@ message TablesReply {
 message JoinTableRequest {
   int64 tableId = 1;
 }
-message JoinTableResponse {
-  bool success = 1;
-}
+message JoinTableResponse {}
 message LeaveTableRequest {
   int64 tableId = 1;
 }
-message LeaveTableResponse {
-  bool success = 1;
-}
+message LeaveTableResponse {}
 
 message StartGameRequest {
   int64 tableId = 1;
 }
-message StartGameResponse {
-  bool success = 1;
-}
+message StartGameResponse {}
 
 message MoveRequest {
   int64 tableId = 1;
   int64 move = 2;
 }
-message MoveResponse {
-  bool success = 1;
+message MoveResponse {}
+
+message CreateTableRequest {
+  string name = 1;
 }
+message CreateTableResponse {}

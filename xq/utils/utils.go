@@ -3,6 +3,7 @@ package utils
 import (
 	"crypto/md5"
 	"crypto/rand"
+	"encoding/base64"
 	"encoding/hex"
 	"fmt"
 	"io"
@@ -37,4 +38,25 @@ func GenUserId() string {
 		return ts[:16]
 	}
 	return hex.EncodeToString(b)
+}
+
+func NewRandomString() (*string, error) {
+	bs, err := GenerateRandomBytes(32)
+	if err != nil {
+		return nil, err
+	}
+	s := Base64Encode(bs)
+	return &s, nil
+}
+
+func Base64Encode(b []byte) string {
+	return base64.StdEncoding.EncodeToString(b)
+}
+
+func Base64Decode(str string) (string, error) {
+	s, err := base64.StdEncoding.DecodeString(str)
+	if err != nil {
+		return "", err
+	}
+	return string(s), nil
 }

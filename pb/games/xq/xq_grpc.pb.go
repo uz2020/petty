@@ -23,6 +23,7 @@ type GameClient interface {
 	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
 	MyStatus(ctx context.Context, in *MyStatusRequest, opts ...grpc.CallOption) (Game_MyStatusClient, error)
 	GetTables(ctx context.Context, in *TablesRequest, opts ...grpc.CallOption) (*TablesReply, error)
+	CreateTable(ctx context.Context, in *CreateTableRequest, opts ...grpc.CallOption) (*CreateTableResponse, error)
 	JoinTable(ctx context.Context, in *JoinTableRequest, opts ...grpc.CallOption) (*JoinTableResponse, error)
 	LeaveTable(ctx context.Context, in *LeaveTableRequest, opts ...grpc.CallOption) (*LeaveTableResponse, error)
 	StartGame(ctx context.Context, in *StartGameRequest, opts ...grpc.CallOption) (*StartGameResponse, error)
@@ -105,6 +106,15 @@ func (c *gameClient) GetTables(ctx context.Context, in *TablesRequest, opts ...g
 	return out, nil
 }
 
+func (c *gameClient) CreateTable(ctx context.Context, in *CreateTableRequest, opts ...grpc.CallOption) (*CreateTableResponse, error) {
+	out := new(CreateTableResponse)
+	err := c.cc.Invoke(ctx, "/xq.Game/CreateTable", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *gameClient) JoinTable(ctx context.Context, in *JoinTableRequest, opts ...grpc.CallOption) (*JoinTableResponse, error) {
 	out := new(JoinTableResponse)
 	err := c.cc.Invoke(ctx, "/xq.Game/JoinTable", in, out, opts...)
@@ -150,6 +160,7 @@ type GameServer interface {
 	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
 	MyStatus(*MyStatusRequest, Game_MyStatusServer) error
 	GetTables(context.Context, *TablesRequest) (*TablesReply, error)
+	CreateTable(context.Context, *CreateTableRequest) (*CreateTableResponse, error)
 	JoinTable(context.Context, *JoinTableRequest) (*JoinTableResponse, error)
 	LeaveTable(context.Context, *LeaveTableRequest) (*LeaveTableResponse, error)
 	StartGame(context.Context, *StartGameRequest) (*StartGameResponse, error)
@@ -175,6 +186,9 @@ func (UnimplementedGameServer) MyStatus(*MyStatusRequest, Game_MyStatusServer) e
 }
 func (UnimplementedGameServer) GetTables(context.Context, *TablesRequest) (*TablesReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetTables not implemented")
+}
+func (UnimplementedGameServer) CreateTable(context.Context, *CreateTableRequest) (*CreateTableResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateTable not implemented")
 }
 func (UnimplementedGameServer) JoinTable(context.Context, *JoinTableRequest) (*JoinTableResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method JoinTable not implemented")
@@ -294,6 +308,24 @@ func _Game_GetTables_Handler(srv interface{}, ctx context.Context, dec func(inte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Game_CreateTable_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateTableRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GameServer).CreateTable(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/xq.Game/CreateTable",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GameServer).CreateTable(ctx, req.(*CreateTableRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Game_JoinTable_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(JoinTableRequest)
 	if err := dec(in); err != nil {
@@ -388,6 +420,10 @@ var Game_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetTables",
 			Handler:    _Game_GetTables_Handler,
+		},
+		{
+			MethodName: "CreateTable",
+			Handler:    _Game_CreateTable_Handler,
 		},
 		{
 			MethodName: "JoinTable",
