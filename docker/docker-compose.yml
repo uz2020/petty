@@ -1,0 +1,41 @@
+version: '3.3'
+
+networks:
+  app-tier:
+    driver: bridge
+
+services:
+  Etcd:
+    restart: always
+    image: 'bitnami/etcd:latest'
+    environment:
+      - ALLOW_NONE_AUTHENTICATION=yes
+      - ETCD_ADVERTISE_CLIENT_URLS=http://etcd:2379
+    ports:
+      - 2379:2379
+      - 2380:2380
+    networks:
+      - app-tier
+    container_name: etcd-petty
+  Mysql:
+    image: mysql:8.0
+    restart: always
+    container_name: mysql-petty
+    command:
+      - --lower_case_table_names=1
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_general_ci
+      - --explicit_defaults_for_timestamp=true
+    environment:
+      - TZ=Asia/Shanghai
+      - MYSQL_ROOT_PASSWORD=1
+    ports:
+      - 3306:3306
+    networks:
+      - app-tier
+  Redis:
+    image: redis:5.0
+    restart: always
+    container_name: redis-petty
+    ports:
+      - 6379:6379
