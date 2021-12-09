@@ -11,6 +11,8 @@ import (
 	"go.etcd.io/etcd/client/v3"
 	"go.etcd.io/etcd/client/v3/naming/endpoints"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 
 	pb "github.com/uz2020/petty/pb/games/xq"
 	"github.com/uz2020/petty/xq/config"
@@ -43,11 +45,48 @@ func (gs *GameServer) init(ctx context.Context) {
 	registerService(conf.ListenAddr, conf.Service, conf.EtcdUrl, gs)
 }
 
-func (*GameServer) GetTables(ctx context.Context, request *pb.TablesRequest) (*pb.TablesReply, error) {
-	r := &pb.TablesReply{
-		TableIds: []int64{33, 44, 55},
+func (gs *GameServer) auth(ctx context.Context, user *db.TbUser) error {
+	var userId, token string
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return grpc.Errorf(codes.Unauthenticated, "missing credentials 1")
 	}
-	return r, nil
+
+	val, ok := md["token"]
+	if !ok {
+		return grpc.Errorf(codes.Unauthenticated, "missing credentials 2")
+	}
+
+	token = val[0]
+	key := fmt.Sprintf("user_sid_%s", token)
+	userId, err := gs.redisConn.Get(ctx, key).Result()
+	if err != nil {
+		return grpc.Errorf(codes.Unauthenticated, "invalid token")
+	}
+
+	result := gs.dbConn.First(user, "user_id = ?", userId)
+	err = result.Error
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return grpc.Errorf(codes.NotFound, "record not found")
+		}
+		return grpc.Errorf(codes.Internal, "db error")
+	}
+
+	return nil
+}
+
+func (gs *GameServer) GetTables(ctx context.Context, in *pb.TablesRequest) (*pb.TablesReply, error) {
+	user := db.TbUser{}
+	out := &pb.TablesReply{}
+
+	if err := gs.auth(ctx, &user); err != nil {
+		return nil, err
+	}
+
+	log.Printf("user: %v", user)
+	return out, nil
 }
 
 func (gs *GameServer) Register(ctx context.Context, in *pb.RegisterRequest) (*pb.RegisterResponse, error) {
@@ -91,7 +130,7 @@ func (gs *GameServer) Login(ctx context.Context, in *pb.LoginRequest) (*pb.Login
 	out.Token = *token
 
 	// 设置redis cookie
-	err = gs.redisConn.Set(gs.ctx, fmt.Sprintf("user_sid_%s", out.Token), user.UserId, time.Hour*24*7).Err()
+	err = gs.redisConn.Set(ctx, fmt.Sprintf("user_sid_%s", out.Token), user.UserId, time.Hour*24*7).Err()
 	if err != nil {
 		return nil, err
 	}

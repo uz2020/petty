@@ -16,6 +16,13 @@ make
 
 ## 运行
 
+## 创建数据库
+
+```
+mysql
+mysql> create database petty
+```
+
 ### server
 
 ```
@@ -31,6 +38,6 @@ sh run-cli.sh
 ```
 
 ```
-> tables
-> login a a
+-> tables
+-> login a a
 ```

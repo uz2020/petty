@@ -22,7 +22,7 @@ type Client struct {
 	conf  config.Conf
 	ecli  *ecv3.Client
 	gc    pb.GameClient
-	token string
+	creds cred
 }
 
 func NewClient(ctx context.Context) *Client {
@@ -49,8 +49,9 @@ func login(cli *Client, argv []string) {
 		return
 	}
 
-	cli.token = resp.Token
-	log.Println("login success", cli.token)
+	token := resp.Token
+	cli.creds.token = token
+	log.Println("login success", token)
 }
 
 func register(cli *Client, argv []string) {
@@ -138,6 +139,20 @@ func (cli *Client) handleCmd(line string) {
 	}
 }
 
+type cred struct {
+	token string
+}
+
+func (c *cred) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
+	return map[string]string{
+		"token": c.token,
+	}, nil
+}
+
+func (*cred) RequireTransportSecurity() bool {
+	return false
+}
+
 func (cli *Client) Run() {
 	ecli, err := ecv3.NewFromURL(cli.conf.EtcdUrl)
 	if err != nil {
@@ -152,7 +167,8 @@ func (cli *Client) Run() {
 	cli.ecli = ecli
 
 	service := "etcd:///" + cli.conf.Service
-	conn, err := grpc.Dial(service, grpc.WithResolvers(etcdResolver), grpc.WithInsecure())
+
+	conn, err := grpc.Dial(service, grpc.WithResolvers(etcdResolver), grpc.WithInsecure(), grpc.WithPerRPCCredentials(&cli.creds))
 	if err != nil {
 		log.Fatalf("dial failed: %v", err)
 	}

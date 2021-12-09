@@ -23,7 +23,7 @@ message LoginRequest {
   string passwd = 2;
 }
 message LoginResponse {
-  string token = 2;
+  string token = 1;
 }
 
 message RegisterRequest {
@@ -35,7 +35,7 @@ message RegisterResponse {}
 
 message GuestLoginRequest {}
 message GuestLoginResponse {
-  string token = 2;
+  string token = 1;
 }
 
 message MyStatusRequest {}
@@ -52,7 +52,8 @@ message TablesReply {
 message JoinTableRequest {
   int64 tableId = 1;
 }
-message JoinTableResponse {}
+message JoinTableResponse {
+}
 message LeaveTableRequest {
   int64 tableId = 1;
 }
@@ -61,7 +62,8 @@ message LeaveTableResponse {}
 message StartGameRequest {
   int64 tableId = 1;
 }
-message StartGameResponse {}
+message StartGameResponse {
+}
 
 message MoveRequest {
   int64 tableId = 1;
