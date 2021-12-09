@@ -55,6 +55,7 @@ func login(cli *Client, argv []string) {
 	}
 
 	cli.token = resp.Token
+	log.Println("login success")
 }
 
 func register(cli *Client, argv []string) {
@@ -78,6 +79,8 @@ func register(cli *Client, argv []string) {
 		log.Println("register failed")
 		return
 	}
+
+	log.Println("register success")
 }
 
 func (cli *Client) handleCmd(line string) {

@@ -2,6 +2,7 @@ package game
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"net"
@@ -15,14 +16,18 @@ import (
 	"github.com/uz2020/petty/xq/config"
 
 	"github.com/uz2020/petty/xq/db"
+	"github.com/uz2020/petty/xq/utils"
 	"gorm.io/gorm"
+
+	"github.com/go-redis/redis/v8"
 )
 
 type GameServer struct {
 	pb.UnimplementedGameServer
-	conf   config.Conf
-	ctx    context.Context
-	dbConn *gorm.DB
+	conf      config.Conf
+	ctx       context.Context
+	dbConn    *gorm.DB
+	redisConn *redis.Client
 }
 
 func (gs *GameServer) init(ctx context.Context) {
@@ -34,6 +39,7 @@ func (gs *GameServer) init(ctx context.Context) {
 		panic(err)
 	}
 	gs.dbConn = dbConn
+	gs.redisConn = db.InitRedis(conf.RedisAddr)
 	registerService(conf.ListenAddr, conf.Service, conf.EtcdUrl, gs)
 }
 
@@ -44,12 +50,34 @@ func (*GameServer) GetTables(ctx context.Context, request *pb.TablesRequest) (*p
 	return r, nil
 }
 
-func (*GameServer) Register(ctx context.Context, in *pb.RegisterRequest) (*pb.RegisterResponse, error) {
-	return nil, nil
+func (gs *GameServer) Register(ctx context.Context, in *pb.RegisterRequest) (*pb.RegisterResponse, error) {
+	out := &pb.RegisterResponse{}
+	user := db.TbUser{}
+	result := gs.dbConn.First(&user, "username = ?", in.Username)
+
+	if result.Error == nil {
+		return nil, errors.New("username already registered, choose another one")
+	}
+
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		user.Username = in.Username
+		user.Password = in.Passwd
+		user.CreatedAt = time.Now()
+		user.UserId = utils.GenUserId()
+		result := gs.dbConn.Create(&user)
+		if result.Error == nil {
+			out.Success = true
+			return out, nil
+		}
+		return out, result.Error
+	}
+
+	return out, result.Error
 }
 
 func (*GameServer) Login(ctx context.Context, in *pb.LoginRequest) (*pb.LoginResponse, error) {
-	return nil, nil
+	out := &pb.LoginResponse{}
+	return out, nil
 }
 
 func (*GameServer) MyStatus(r *pb.MyStatusRequest, srv pb.Game_MyStatusServer) error {
