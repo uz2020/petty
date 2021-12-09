@@ -54,29 +54,40 @@ func (gs *GameServer) Register(ctx context.Context, in *pb.RegisterRequest) (*pb
 	out := &pb.RegisterResponse{}
 	user := db.TbUser{}
 	result := gs.dbConn.First(&user, "username = ?", in.Username)
+	err := result.Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			user.Username = in.Username
+			user.Password = in.Passwd
+			user.CreatedAt = time.Now()
+			user.UserId = utils.GenUserId()
 
-	if result.Error == nil {
-		return nil, errors.New("username already registered, choose another one")
-	}
-
-	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		user.Username = in.Username
-		user.Password = in.Passwd
-		user.CreatedAt = time.Now()
-		user.UserId = utils.GenUserId()
-		result := gs.dbConn.Create(&user)
-		if result.Error == nil {
-			out.Success = true
+			result := gs.dbConn.Create(&user)
+			err := result.Error
+			if result.Error != nil {
+				return nil, err
+			}
 			return out, nil
 		}
-		return out, result.Error
+		return nil, err
 	}
-
-	return out, result.Error
+	return nil, errors.New("username already registered, choose another one")
 }
 
-func (*GameServer) Login(ctx context.Context, in *pb.LoginRequest) (*pb.LoginResponse, error) {
+func (gs *GameServer) Login(ctx context.Context, in *pb.LoginRequest) (*pb.LoginResponse, error) {
 	out := &pb.LoginResponse{}
+	user := db.TbUser{}
+	result := gs.dbConn.First(&user, "username = ? and password = ?", in.Username, in.Passwd)
+	err := result.Error
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.New("username or password incorrect")
+		}
+		return nil, err
+	}
+
+	out.Token = "yes"
 	return out, nil
 }
 

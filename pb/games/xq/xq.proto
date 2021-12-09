@@ -22,7 +22,6 @@ message LoginRequest {
   string passwd = 2;
 }
 message LoginResponse {
-  bool success = 1;
   string token = 2;
 }
 
@@ -30,9 +29,7 @@ message RegisterRequest {
   string username = 1;
   string passwd = 2;
 }
-message RegisterResponse {
-  bool success = 1;
-}
+message RegisterResponse {}
 
 
 message GuestLoginRequest {}

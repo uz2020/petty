@@ -49,13 +49,8 @@ func login(cli *Client, argv []string) {
 		return
 	}
 
-	if !resp.Success {
-		log.Println("login failed")
-		return
-	}
-
 	cli.token = resp.Token
-	log.Println("login success")
+	log.Println("login success", cli.token)
 }
 
 func register(cli *Client, argv []string) {
@@ -65,18 +60,13 @@ func register(cli *Client, argv []string) {
 	name := argv[1]
 	passwd := argv[2]
 
-	resp, err := cli.gc.Register(cli.ctx, &pb.RegisterRequest{
+	_, err := cli.gc.Register(cli.ctx, &pb.RegisterRequest{
 		Username: name,
 		Passwd:   passwd,
 	})
 
 	if err != nil {
 		log.Println("register err", err)
-		return
-	}
-
-	if !resp.Success {
-		log.Println("register failed")
 		return
 	}
 
