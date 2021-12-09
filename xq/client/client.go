@@ -57,6 +57,29 @@ func login(cli *Client, argv []string) {
 	cli.token = resp.Token
 }
 
+func register(cli *Client, argv []string) {
+	if len(argv) < 3 {
+		return
+	}
+	name := argv[1]
+	passwd := argv[2]
+
+	resp, err := cli.gc.Register(cli.ctx, &pb.RegisterRequest{
+		Username: name,
+		Passwd:   passwd,
+	})
+
+	if err != nil {
+		log.Println("register err", err)
+		return
+	}
+
+	if !resp.Success {
+		log.Println("register failed")
+		return
+	}
+}
+
 func (cli *Client) handleCmd(line string) {
 	argv := strings.Fields(line)
 
@@ -67,6 +90,9 @@ func (cli *Client) handleCmd(line string) {
 	cmd := argv[0]
 
 	switch cmd {
+	case "register":
+		go register(cli, argv)
+	case "guest-login":
 	case "join-table":
 	case "leave-table":
 	case "start-game":

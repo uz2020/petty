@@ -1,1 +1,4 @@
 package db
+
+func InitDb() {
+}

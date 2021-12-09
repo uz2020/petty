@@ -130,6 +130,201 @@ func (x *LoginResponse) GetToken() string {
 	return ""
 }
 
+type RegisterRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Username string `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
+	Passwd   string `protobuf:"bytes,2,opt,name=passwd,proto3" json:"passwd,omitempty"`
+}
+
+func (x *RegisterRequest) Reset() {
+	*x = RegisterRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_pb_games_xq_xq_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *RegisterRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RegisterRequest) ProtoMessage() {}
+
+func (x *RegisterRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_pb_games_xq_xq_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RegisterRequest.ProtoReflect.Descriptor instead.
+func (*RegisterRequest) Descriptor() ([]byte, []int) {
+	return file_pb_games_xq_xq_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *RegisterRequest) GetUsername() string {
+	if x != nil {
+		return x.Username
+	}
+	return ""
+}
+
+func (x *RegisterRequest) GetPasswd() string {
+	if x != nil {
+		return x.Passwd
+	}
+	return ""
+}
+
+type RegisterResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Success bool `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+}
+
+func (x *RegisterResponse) Reset() {
+	*x = RegisterResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_pb_games_xq_xq_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *RegisterResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RegisterResponse) ProtoMessage() {}
+
+func (x *RegisterResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_pb_games_xq_xq_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RegisterResponse.ProtoReflect.Descriptor instead.
+func (*RegisterResponse) Descriptor() ([]byte, []int) {
+	return file_pb_games_xq_xq_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *RegisterResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+type GuestLoginRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *GuestLoginRequest) Reset() {
+	*x = GuestLoginRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_pb_games_xq_xq_proto_msgTypes[4]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GuestLoginRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GuestLoginRequest) ProtoMessage() {}
+
+func (x *GuestLoginRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_pb_games_xq_xq_proto_msgTypes[4]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GuestLoginRequest.ProtoReflect.Descriptor instead.
+func (*GuestLoginRequest) Descriptor() ([]byte, []int) {
+	return file_pb_games_xq_xq_proto_rawDescGZIP(), []int{4}
+}
+
+type GuestLoginResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Success bool   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	Token   string `protobuf:"bytes,2,opt,name=token,proto3" json:"token,omitempty"`
+}
+
+func (x *GuestLoginResponse) Reset() {
+	*x = GuestLoginResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_pb_games_xq_xq_proto_msgTypes[5]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GuestLoginResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GuestLoginResponse) ProtoMessage() {}
+
+func (x *GuestLoginResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_pb_games_xq_xq_proto_msgTypes[5]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GuestLoginResponse.ProtoReflect.Descriptor instead.
+func (*GuestLoginResponse) Descriptor() ([]byte, []int) {
+	return file_pb_games_xq_xq_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *GuestLoginResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *GuestLoginResponse) GetToken() string {
+	if x != nil {
+		return x.Token
+	}
+	return ""
+}
+
 type MyStatusRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -139,7 +334,7 @@ type MyStatusRequest struct {
 func (x *MyStatusRequest) Reset() {
 	*x = MyStatusRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pb_games_xq_xq_proto_msgTypes[2]
+		mi := &file_pb_games_xq_xq_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -152,7 +347,7 @@ func (x *MyStatusRequest) String() string {
 func (*MyStatusRequest) ProtoMessage() {}
 
 func (x *MyStatusRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_games_xq_xq_proto_msgTypes[2]
+	mi := &file_pb_games_xq_xq_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -165,7 +360,7 @@ func (x *MyStatusRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MyStatusRequest.ProtoReflect.Descriptor instead.
 func (*MyStatusRequest) Descriptor() ([]byte, []int) {
-	return file_pb_games_xq_xq_proto_rawDescGZIP(), []int{2}
+	return file_pb_games_xq_xq_proto_rawDescGZIP(), []int{6}
 }
 
 type MyStatusResponse struct {
@@ -180,7 +375,7 @@ type MyStatusResponse struct {
 func (x *MyStatusResponse) Reset() {
 	*x = MyStatusResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pb_games_xq_xq_proto_msgTypes[3]
+		mi := &file_pb_games_xq_xq_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -193,7 +388,7 @@ func (x *MyStatusResponse) String() string {
 func (*MyStatusResponse) ProtoMessage() {}
 
 func (x *MyStatusResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_games_xq_xq_proto_msgTypes[3]
+	mi := &file_pb_games_xq_xq_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -206,7 +401,7 @@ func (x *MyStatusResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MyStatusResponse.ProtoReflect.Descriptor instead.
 func (*MyStatusResponse) Descriptor() ([]byte, []int) {
-	return file_pb_games_xq_xq_proto_rawDescGZIP(), []int{3}
+	return file_pb_games_xq_xq_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *MyStatusResponse) GetTime() int64 {
@@ -232,7 +427,7 @@ type TablesRequest struct {
 func (x *TablesRequest) Reset() {
 	*x = TablesRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pb_games_xq_xq_proto_msgTypes[4]
+		mi := &file_pb_games_xq_xq_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -245,7 +440,7 @@ func (x *TablesRequest) String() string {
 func (*TablesRequest) ProtoMessage() {}
 
 func (x *TablesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_games_xq_xq_proto_msgTypes[4]
+	mi := &file_pb_games_xq_xq_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -258,7 +453,7 @@ func (x *TablesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TablesRequest.ProtoReflect.Descriptor instead.
 func (*TablesRequest) Descriptor() ([]byte, []int) {
-	return file_pb_games_xq_xq_proto_rawDescGZIP(), []int{4}
+	return file_pb_games_xq_xq_proto_rawDescGZIP(), []int{8}
 }
 
 type TablesReply struct {
@@ -272,7 +467,7 @@ type TablesReply struct {
 func (x *TablesReply) Reset() {
 	*x = TablesReply{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pb_games_xq_xq_proto_msgTypes[5]
+		mi := &file_pb_games_xq_xq_proto_msgTypes[9]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -285,7 +480,7 @@ func (x *TablesReply) String() string {
 func (*TablesReply) ProtoMessage() {}
 
 func (x *TablesReply) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_games_xq_xq_proto_msgTypes[5]
+	mi := &file_pb_games_xq_xq_proto_msgTypes[9]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -298,7 +493,7 @@ func (x *TablesReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TablesReply.ProtoReflect.Descriptor instead.
 func (*TablesReply) Descriptor() ([]byte, []int) {
-	return file_pb_games_xq_xq_proto_rawDescGZIP(), []int{5}
+	return file_pb_games_xq_xq_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *TablesReply) GetTableIds() []int64 {
@@ -319,7 +514,7 @@ type JoinTableRequest struct {
 func (x *JoinTableRequest) Reset() {
 	*x = JoinTableRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pb_games_xq_xq_proto_msgTypes[6]
+		mi := &file_pb_games_xq_xq_proto_msgTypes[10]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -332,7 +527,7 @@ func (x *JoinTableRequest) String() string {
 func (*JoinTableRequest) ProtoMessage() {}
 
 func (x *JoinTableRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_games_xq_xq_proto_msgTypes[6]
+	mi := &file_pb_games_xq_xq_proto_msgTypes[10]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -345,7 +540,7 @@ func (x *JoinTableRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use JoinTableRequest.ProtoReflect.Descriptor instead.
 func (*JoinTableRequest) Descriptor() ([]byte, []int) {
-	return file_pb_games_xq_xq_proto_rawDescGZIP(), []int{6}
+	return file_pb_games_xq_xq_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *JoinTableRequest) GetTableId() int64 {
@@ -366,7 +561,7 @@ type JoinTableResponse struct {
 func (x *JoinTableResponse) Reset() {
 	*x = JoinTableResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pb_games_xq_xq_proto_msgTypes[7]
+		mi := &file_pb_games_xq_xq_proto_msgTypes[11]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -379,7 +574,7 @@ func (x *JoinTableResponse) String() string {
 func (*JoinTableResponse) ProtoMessage() {}
 
 func (x *JoinTableResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_games_xq_xq_proto_msgTypes[7]
+	mi := &file_pb_games_xq_xq_proto_msgTypes[11]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -392,7 +587,7 @@ func (x *JoinTableResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use JoinTableResponse.ProtoReflect.Descriptor instead.
 func (*JoinTableResponse) Descriptor() ([]byte, []int) {
-	return file_pb_games_xq_xq_proto_rawDescGZIP(), []int{7}
+	return file_pb_games_xq_xq_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *JoinTableResponse) GetSuccess() bool {
@@ -413,7 +608,7 @@ type LeaveTableRequest struct {
 func (x *LeaveTableRequest) Reset() {
 	*x = LeaveTableRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pb_games_xq_xq_proto_msgTypes[8]
+		mi := &file_pb_games_xq_xq_proto_msgTypes[12]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -426,7 +621,7 @@ func (x *LeaveTableRequest) String() string {
 func (*LeaveTableRequest) ProtoMessage() {}
 
 func (x *LeaveTableRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_games_xq_xq_proto_msgTypes[8]
+	mi := &file_pb_games_xq_xq_proto_msgTypes[12]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -439,7 +634,7 @@ func (x *LeaveTableRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LeaveTableRequest.ProtoReflect.Descriptor instead.
 func (*LeaveTableRequest) Descriptor() ([]byte, []int) {
-	return file_pb_games_xq_xq_proto_rawDescGZIP(), []int{8}
+	return file_pb_games_xq_xq_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *LeaveTableRequest) GetTableId() int64 {
@@ -460,7 +655,7 @@ type LeaveTableResponse struct {
 func (x *LeaveTableResponse) Reset() {
 	*x = LeaveTableResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pb_games_xq_xq_proto_msgTypes[9]
+		mi := &file_pb_games_xq_xq_proto_msgTypes[13]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -473,7 +668,7 @@ func (x *LeaveTableResponse) String() string {
 func (*LeaveTableResponse) ProtoMessage() {}
 
 func (x *LeaveTableResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_games_xq_xq_proto_msgTypes[9]
+	mi := &file_pb_games_xq_xq_proto_msgTypes[13]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -486,7 +681,7 @@ func (x *LeaveTableResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LeaveTableResponse.ProtoReflect.Descriptor instead.
 func (*LeaveTableResponse) Descriptor() ([]byte, []int) {
-	return file_pb_games_xq_xq_proto_rawDescGZIP(), []int{9}
+	return file_pb_games_xq_xq_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *LeaveTableResponse) GetSuccess() bool {
@@ -507,7 +702,7 @@ type StartGameRequest struct {
 func (x *StartGameRequest) Reset() {
 	*x = StartGameRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pb_games_xq_xq_proto_msgTypes[10]
+		mi := &file_pb_games_xq_xq_proto_msgTypes[14]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -520,7 +715,7 @@ func (x *StartGameRequest) String() string {
 func (*StartGameRequest) ProtoMessage() {}
 
 func (x *StartGameRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_games_xq_xq_proto_msgTypes[10]
+	mi := &file_pb_games_xq_xq_proto_msgTypes[14]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -533,7 +728,7 @@ func (x *StartGameRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StartGameRequest.ProtoReflect.Descriptor instead.
 func (*StartGameRequest) Descriptor() ([]byte, []int) {
-	return file_pb_games_xq_xq_proto_rawDescGZIP(), []int{10}
+	return file_pb_games_xq_xq_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *StartGameRequest) GetTableId() int64 {
@@ -554,7 +749,7 @@ type StartGameResponse struct {
 func (x *StartGameResponse) Reset() {
 	*x = StartGameResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pb_games_xq_xq_proto_msgTypes[11]
+		mi := &file_pb_games_xq_xq_proto_msgTypes[15]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -567,7 +762,7 @@ func (x *StartGameResponse) String() string {
 func (*StartGameResponse) ProtoMessage() {}
 
 func (x *StartGameResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_games_xq_xq_proto_msgTypes[11]
+	mi := &file_pb_games_xq_xq_proto_msgTypes[15]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -580,7 +775,7 @@ func (x *StartGameResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StartGameResponse.ProtoReflect.Descriptor instead.
 func (*StartGameResponse) Descriptor() ([]byte, []int) {
-	return file_pb_games_xq_xq_proto_rawDescGZIP(), []int{11}
+	return file_pb_games_xq_xq_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *StartGameResponse) GetSuccess() bool {
@@ -602,7 +797,7 @@ type MoveRequest struct {
 func (x *MoveRequest) Reset() {
 	*x = MoveRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pb_games_xq_xq_proto_msgTypes[12]
+		mi := &file_pb_games_xq_xq_proto_msgTypes[16]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -615,7 +810,7 @@ func (x *MoveRequest) String() string {
 func (*MoveRequest) ProtoMessage() {}
 
 func (x *MoveRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_games_xq_xq_proto_msgTypes[12]
+	mi := &file_pb_games_xq_xq_proto_msgTypes[16]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -628,7 +823,7 @@ func (x *MoveRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MoveRequest.ProtoReflect.Descriptor instead.
 func (*MoveRequest) Descriptor() ([]byte, []int) {
-	return file_pb_games_xq_xq_proto_rawDescGZIP(), []int{12}
+	return file_pb_games_xq_xq_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *MoveRequest) GetTableId() int64 {
@@ -656,7 +851,7 @@ type MoveResponse struct {
 func (x *MoveResponse) Reset() {
 	*x = MoveResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pb_games_xq_xq_proto_msgTypes[13]
+		mi := &file_pb_games_xq_xq_proto_msgTypes[17]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -669,7 +864,7 @@ func (x *MoveResponse) String() string {
 func (*MoveResponse) ProtoMessage() {}
 
 func (x *MoveResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_pb_games_xq_xq_proto_msgTypes[13]
+	mi := &file_pb_games_xq_xq_proto_msgTypes[17]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -682,7 +877,7 @@ func (x *MoveResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MoveResponse.ProtoReflect.Descriptor instead.
 func (*MoveResponse) Descriptor() ([]byte, []int) {
-	return file_pb_games_xq_xq_proto_rawDescGZIP(), []int{13}
+	return file_pb_games_xq_xq_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *MoveResponse) GetSuccess() bool {
@@ -702,6 +897,19 @@ var file_pb_games_xq_xq_proto_rawDesc = []byte{
 	0x65, 0x72, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x70, 0x61, 0x73, 0x73, 0x77, 0x64,
 	0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x70, 0x61, 0x73, 0x73, 0x77, 0x64, 0x22, 0x3f,
 	0x0a, 0x0d, 0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x18, 0x0a, 0x07, 0x73, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08,
+	0x52, 0x07, 0x73, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x12, 0x14, 0x0a, 0x05, 0x74, 0x6f, 0x6b,
+	0x65, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x22,
+	0x45, 0x0a, 0x0f, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x12, 0x1a, 0x0a, 0x08, 0x75, 0x73, 0x65, 0x72, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x75, 0x73, 0x65, 0x72, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x16,
+	0x0a, 0x06, 0x70, 0x61, 0x73, 0x73, 0x77, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06,
+	0x70, 0x61, 0x73, 0x73, 0x77, 0x64, 0x22, 0x2c, 0x0a, 0x10, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74,
+	0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x73, 0x75,
+	0x63, 0x63, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x73, 0x75, 0x63,
+	0x63, 0x65, 0x73, 0x73, 0x22, 0x13, 0x0a, 0x11, 0x47, 0x75, 0x65, 0x73, 0x74, 0x4c, 0x6f, 0x67,
+	0x69, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x44, 0x0a, 0x12, 0x47, 0x75, 0x65,
+	0x73, 0x74, 0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
 	0x18, 0x0a, 0x07, 0x73, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08,
 	0x52, 0x07, 0x73, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x12, 0x14, 0x0a, 0x05, 0x74, 0x6f, 0x6b,
 	0x65, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x22,
@@ -737,35 +945,43 @@ var file_pb_games_xq_xq_proto_rawDesc = []byte{
 	0x6d, 0x6f, 0x76, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x03, 0x52, 0x04, 0x6d, 0x6f, 0x76, 0x65,
 	0x22, 0x28, 0x0a, 0x0c, 0x4d, 0x6f, 0x76, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
 	0x12, 0x18, 0x0a, 0x07, 0x73, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x08, 0x52, 0x07, 0x73, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x32, 0x88, 0x03, 0x0a, 0x04, 0x47,
+	0x08, 0x52, 0x07, 0x73, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x32, 0x80, 0x04, 0x0a, 0x04, 0x47,
 	0x61, 0x6d, 0x65, 0x12, 0x2e, 0x0a, 0x05, 0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x12, 0x10, 0x2e, 0x78,
 	0x71, 0x2e, 0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x11,
 	0x2e, 0x78, 0x71, 0x2e, 0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x22, 0x00, 0x12, 0x39, 0x0a, 0x08, 0x4d, 0x79, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x12,
-	0x13, 0x2e, 0x78, 0x71, 0x2e, 0x4d, 0x79, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x65, 0x71,
-	0x75, 0x65, 0x73, 0x74, 0x1a, 0x14, 0x2e, 0x78, 0x71, 0x2e, 0x4d, 0x79, 0x53, 0x74, 0x61, 0x74,
-	0x75, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x30, 0x01, 0x12, 0x31,
-	0x0a, 0x09, 0x47, 0x65, 0x74, 0x54, 0x61, 0x62, 0x6c, 0x65, 0x73, 0x12, 0x11, 0x2e, 0x78, 0x71,
-	0x2e, 0x54, 0x61, 0x62, 0x6c, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x0f,
-	0x2e, 0x78, 0x71, 0x2e, 0x54, 0x61, 0x62, 0x6c, 0x65, 0x73, 0x52, 0x65, 0x70, 0x6c, 0x79, 0x22,
-	0x00, 0x12, 0x3a, 0x0a, 0x09, 0x4a, 0x6f, 0x69, 0x6e, 0x54, 0x61, 0x62, 0x6c, 0x65, 0x12, 0x14,
-	0x2e, 0x78, 0x71, 0x2e, 0x4a, 0x6f, 0x69, 0x6e, 0x54, 0x61, 0x62, 0x6c, 0x65, 0x52, 0x65, 0x71,
-	0x75, 0x65, 0x73, 0x74, 0x1a, 0x15, 0x2e, 0x78, 0x71, 0x2e, 0x4a, 0x6f, 0x69, 0x6e, 0x54, 0x61,
-	0x62, 0x6c, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x3d, 0x0a,
-	0x0a, 0x4c, 0x65, 0x61, 0x76, 0x65, 0x54, 0x61, 0x62, 0x6c, 0x65, 0x12, 0x15, 0x2e, 0x78, 0x71,
-	0x2e, 0x4c, 0x65, 0x61, 0x76, 0x65, 0x54, 0x61, 0x62, 0x6c, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65,
-	0x73, 0x74, 0x1a, 0x16, 0x2e, 0x78, 0x71, 0x2e, 0x4c, 0x65, 0x61, 0x76, 0x65, 0x54, 0x61, 0x62,
-	0x6c, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x3a, 0x0a, 0x09,
-	0x53, 0x74, 0x61, 0x72, 0x74, 0x47, 0x61, 0x6d, 0x65, 0x12, 0x14, 0x2e, 0x78, 0x71, 0x2e, 0x53,
-	0x74, 0x61, 0x72, 0x74, 0x47, 0x61, 0x6d, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
-	0x15, 0x2e, 0x78, 0x71, 0x2e, 0x53, 0x74, 0x61, 0x72, 0x74, 0x47, 0x61, 0x6d, 0x65, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x2b, 0x0a, 0x04, 0x4d, 0x6f, 0x76, 0x65,
-	0x12, 0x0f, 0x2e, 0x78, 0x71, 0x2e, 0x4d, 0x6f, 0x76, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
-	0x74, 0x1a, 0x10, 0x2e, 0x78, 0x71, 0x2e, 0x4d, 0x6f, 0x76, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x22, 0x00, 0x42, 0x2d, 0x5a, 0x2b, 0x68, 0x74, 0x74, 0x70, 0x73, 0x3a, 0x2f,
-	0x2f, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x75, 0x7a, 0x32, 0x30,
-	0x32, 0x30, 0x2f, 0x70, 0x65, 0x74, 0x74, 0x79, 0x2f, 0x70, 0x62, 0x2f, 0x67, 0x61, 0x6d, 0x65,
-	0x73, 0x2f, 0x78, 0x71, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x65, 0x22, 0x00, 0x12, 0x3d, 0x0a, 0x0a, 0x47, 0x75, 0x65, 0x73, 0x74, 0x4c, 0x6f, 0x67, 0x69,
+	0x6e, 0x12, 0x15, 0x2e, 0x78, 0x71, 0x2e, 0x47, 0x75, 0x65, 0x73, 0x74, 0x4c, 0x6f, 0x67, 0x69,
+	0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x16, 0x2e, 0x78, 0x71, 0x2e, 0x47, 0x75,
+	0x65, 0x73, 0x74, 0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x22, 0x00, 0x12, 0x37, 0x0a, 0x08, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x12, 0x13,
+	0x2e, 0x78, 0x71, 0x2e, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x1a, 0x14, 0x2e, 0x78, 0x71, 0x2e, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65,
+	0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x39, 0x0a, 0x08, 0x4d,
+	0x79, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x12, 0x13, 0x2e, 0x78, 0x71, 0x2e, 0x4d, 0x79, 0x53,
+	0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x14, 0x2e, 0x78,
+	0x71, 0x2e, 0x4d, 0x79, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x22, 0x00, 0x30, 0x01, 0x12, 0x31, 0x0a, 0x09, 0x47, 0x65, 0x74, 0x54, 0x61, 0x62,
+	0x6c, 0x65, 0x73, 0x12, 0x11, 0x2e, 0x78, 0x71, 0x2e, 0x54, 0x61, 0x62, 0x6c, 0x65, 0x73, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x0f, 0x2e, 0x78, 0x71, 0x2e, 0x54, 0x61, 0x62, 0x6c,
+	0x65, 0x73, 0x52, 0x65, 0x70, 0x6c, 0x79, 0x22, 0x00, 0x12, 0x3a, 0x0a, 0x09, 0x4a, 0x6f, 0x69,
+	0x6e, 0x54, 0x61, 0x62, 0x6c, 0x65, 0x12, 0x14, 0x2e, 0x78, 0x71, 0x2e, 0x4a, 0x6f, 0x69, 0x6e,
+	0x54, 0x61, 0x62, 0x6c, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x15, 0x2e, 0x78,
+	0x71, 0x2e, 0x4a, 0x6f, 0x69, 0x6e, 0x54, 0x61, 0x62, 0x6c, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x3d, 0x0a, 0x0a, 0x4c, 0x65, 0x61, 0x76, 0x65, 0x54, 0x61,
+	0x62, 0x6c, 0x65, 0x12, 0x15, 0x2e, 0x78, 0x71, 0x2e, 0x4c, 0x65, 0x61, 0x76, 0x65, 0x54, 0x61,
+	0x62, 0x6c, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x16, 0x2e, 0x78, 0x71, 0x2e,
+	0x4c, 0x65, 0x61, 0x76, 0x65, 0x54, 0x61, 0x62, 0x6c, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x22, 0x00, 0x12, 0x3a, 0x0a, 0x09, 0x53, 0x74, 0x61, 0x72, 0x74, 0x47, 0x61, 0x6d,
+	0x65, 0x12, 0x14, 0x2e, 0x78, 0x71, 0x2e, 0x53, 0x74, 0x61, 0x72, 0x74, 0x47, 0x61, 0x6d, 0x65,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x15, 0x2e, 0x78, 0x71, 0x2e, 0x53, 0x74, 0x61,
+	0x72, 0x74, 0x47, 0x61, 0x6d, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00,
+	0x12, 0x2b, 0x0a, 0x04, 0x4d, 0x6f, 0x76, 0x65, 0x12, 0x0f, 0x2e, 0x78, 0x71, 0x2e, 0x4d, 0x6f,
+	0x76, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x10, 0x2e, 0x78, 0x71, 0x2e, 0x4d,
+	0x6f, 0x76, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x42, 0x2d, 0x5a,
+	0x2b, 0x68, 0x74, 0x74, 0x70, 0x73, 0x3a, 0x2f, 0x2f, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e,
+	0x63, 0x6f, 0x6d, 0x2f, 0x75, 0x7a, 0x32, 0x30, 0x32, 0x30, 0x2f, 0x70, 0x65, 0x74, 0x74, 0x79,
+	0x2f, 0x70, 0x62, 0x2f, 0x67, 0x61, 0x6d, 0x65, 0x73, 0x2f, 0x78, 0x71, 0x62, 0x06, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -780,40 +996,48 @@ func file_pb_games_xq_xq_proto_rawDescGZIP() []byte {
 	return file_pb_games_xq_xq_proto_rawDescData
 }
 
-var file_pb_games_xq_xq_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
+var file_pb_games_xq_xq_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
 var file_pb_games_xq_xq_proto_goTypes = []interface{}{
 	(*LoginRequest)(nil),       // 0: xq.LoginRequest
 	(*LoginResponse)(nil),      // 1: xq.LoginResponse
-	(*MyStatusRequest)(nil),    // 2: xq.MyStatusRequest
-	(*MyStatusResponse)(nil),   // 3: xq.MyStatusResponse
-	(*TablesRequest)(nil),      // 4: xq.TablesRequest
-	(*TablesReply)(nil),        // 5: xq.TablesReply
-	(*JoinTableRequest)(nil),   // 6: xq.JoinTableRequest
-	(*JoinTableResponse)(nil),  // 7: xq.JoinTableResponse
-	(*LeaveTableRequest)(nil),  // 8: xq.LeaveTableRequest
-	(*LeaveTableResponse)(nil), // 9: xq.LeaveTableResponse
-	(*StartGameRequest)(nil),   // 10: xq.StartGameRequest
-	(*StartGameResponse)(nil),  // 11: xq.StartGameResponse
-	(*MoveRequest)(nil),        // 12: xq.MoveRequest
-	(*MoveResponse)(nil),       // 13: xq.MoveResponse
+	(*RegisterRequest)(nil),    // 2: xq.RegisterRequest
+	(*RegisterResponse)(nil),   // 3: xq.RegisterResponse
+	(*GuestLoginRequest)(nil),  // 4: xq.GuestLoginRequest
+	(*GuestLoginResponse)(nil), // 5: xq.GuestLoginResponse
+	(*MyStatusRequest)(nil),    // 6: xq.MyStatusRequest
+	(*MyStatusResponse)(nil),   // 7: xq.MyStatusResponse
+	(*TablesRequest)(nil),      // 8: xq.TablesRequest
+	(*TablesReply)(nil),        // 9: xq.TablesReply
+	(*JoinTableRequest)(nil),   // 10: xq.JoinTableRequest
+	(*JoinTableResponse)(nil),  // 11: xq.JoinTableResponse
+	(*LeaveTableRequest)(nil),  // 12: xq.LeaveTableRequest
+	(*LeaveTableResponse)(nil), // 13: xq.LeaveTableResponse
+	(*StartGameRequest)(nil),   // 14: xq.StartGameRequest
+	(*StartGameResponse)(nil),  // 15: xq.StartGameResponse
+	(*MoveRequest)(nil),        // 16: xq.MoveRequest
+	(*MoveResponse)(nil),       // 17: xq.MoveResponse
 }
 var file_pb_games_xq_xq_proto_depIdxs = []int32{
 	0,  // 0: xq.Game.Login:input_type -> xq.LoginRequest
-	2,  // 1: xq.Game.MyStatus:input_type -> xq.MyStatusRequest
-	4,  // 2: xq.Game.GetTables:input_type -> xq.TablesRequest
-	6,  // 3: xq.Game.JoinTable:input_type -> xq.JoinTableRequest
-	8,  // 4: xq.Game.LeaveTable:input_type -> xq.LeaveTableRequest
-	10, // 5: xq.Game.StartGame:input_type -> xq.StartGameRequest
-	12, // 6: xq.Game.Move:input_type -> xq.MoveRequest
-	1,  // 7: xq.Game.Login:output_type -> xq.LoginResponse
-	3,  // 8: xq.Game.MyStatus:output_type -> xq.MyStatusResponse
-	5,  // 9: xq.Game.GetTables:output_type -> xq.TablesReply
-	7,  // 10: xq.Game.JoinTable:output_type -> xq.JoinTableResponse
-	9,  // 11: xq.Game.LeaveTable:output_type -> xq.LeaveTableResponse
-	11, // 12: xq.Game.StartGame:output_type -> xq.StartGameResponse
-	13, // 13: xq.Game.Move:output_type -> xq.MoveResponse
-	7,  // [7:14] is the sub-list for method output_type
-	0,  // [0:7] is the sub-list for method input_type
+	4,  // 1: xq.Game.GuestLogin:input_type -> xq.GuestLoginRequest
+	2,  // 2: xq.Game.Register:input_type -> xq.RegisterRequest
+	6,  // 3: xq.Game.MyStatus:input_type -> xq.MyStatusRequest
+	8,  // 4: xq.Game.GetTables:input_type -> xq.TablesRequest
+	10, // 5: xq.Game.JoinTable:input_type -> xq.JoinTableRequest
+	12, // 6: xq.Game.LeaveTable:input_type -> xq.LeaveTableRequest
+	14, // 7: xq.Game.StartGame:input_type -> xq.StartGameRequest
+	16, // 8: xq.Game.Move:input_type -> xq.MoveRequest
+	1,  // 9: xq.Game.Login:output_type -> xq.LoginResponse
+	5,  // 10: xq.Game.GuestLogin:output_type -> xq.GuestLoginResponse
+	3,  // 11: xq.Game.Register:output_type -> xq.RegisterResponse
+	7,  // 12: xq.Game.MyStatus:output_type -> xq.MyStatusResponse
+	9,  // 13: xq.Game.GetTables:output_type -> xq.TablesReply
+	11, // 14: xq.Game.JoinTable:output_type -> xq.JoinTableResponse
+	13, // 15: xq.Game.LeaveTable:output_type -> xq.LeaveTableResponse
+	15, // 16: xq.Game.StartGame:output_type -> xq.StartGameResponse
+	17, // 17: xq.Game.Move:output_type -> xq.MoveResponse
+	9,  // [9:18] is the sub-list for method output_type
+	0,  // [0:9] is the sub-list for method input_type
 	0,  // [0:0] is the sub-list for extension type_name
 	0,  // [0:0] is the sub-list for extension extendee
 	0,  // [0:0] is the sub-list for field type_name
@@ -850,7 +1074,7 @@ func file_pb_games_xq_xq_proto_init() {
 			}
 		}
 		file_pb_games_xq_xq_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MyStatusRequest); i {
+			switch v := v.(*RegisterRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -862,7 +1086,7 @@ func file_pb_games_xq_xq_proto_init() {
 			}
 		}
 		file_pb_games_xq_xq_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MyStatusResponse); i {
+			switch v := v.(*RegisterResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -874,7 +1098,7 @@ func file_pb_games_xq_xq_proto_init() {
 			}
 		}
 		file_pb_games_xq_xq_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*TablesRequest); i {
+			switch v := v.(*GuestLoginRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -886,7 +1110,7 @@ func file_pb_games_xq_xq_proto_init() {
 			}
 		}
 		file_pb_games_xq_xq_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*TablesReply); i {
+			switch v := v.(*GuestLoginResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -898,7 +1122,7 @@ func file_pb_games_xq_xq_proto_init() {
 			}
 		}
 		file_pb_games_xq_xq_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*JoinTableRequest); i {
+			switch v := v.(*MyStatusRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -910,7 +1134,7 @@ func file_pb_games_xq_xq_proto_init() {
 			}
 		}
 		file_pb_games_xq_xq_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*JoinTableResponse); i {
+			switch v := v.(*MyStatusResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -922,7 +1146,7 @@ func file_pb_games_xq_xq_proto_init() {
 			}
 		}
 		file_pb_games_xq_xq_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*LeaveTableRequest); i {
+			switch v := v.(*TablesRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -934,7 +1158,7 @@ func file_pb_games_xq_xq_proto_init() {
 			}
 		}
 		file_pb_games_xq_xq_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*LeaveTableResponse); i {
+			switch v := v.(*TablesReply); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -946,7 +1170,7 @@ func file_pb_games_xq_xq_proto_init() {
 			}
 		}
 		file_pb_games_xq_xq_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*StartGameRequest); i {
+			switch v := v.(*JoinTableRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -958,7 +1182,7 @@ func file_pb_games_xq_xq_proto_init() {
 			}
 		}
 		file_pb_games_xq_xq_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*StartGameResponse); i {
+			switch v := v.(*JoinTableResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -970,7 +1194,7 @@ func file_pb_games_xq_xq_proto_init() {
 			}
 		}
 		file_pb_games_xq_xq_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MoveRequest); i {
+			switch v := v.(*LeaveTableRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -982,6 +1206,54 @@ func file_pb_games_xq_xq_proto_init() {
 			}
 		}
 		file_pb_games_xq_xq_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*LeaveTableResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_pb_games_xq_xq_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*StartGameRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_pb_games_xq_xq_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*StartGameResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_pb_games_xq_xq_proto_msgTypes[16].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*MoveRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_pb_games_xq_xq_proto_msgTypes[17].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*MoveResponse); i {
 			case 0:
 				return &v.state
@@ -1000,7 +1272,7 @@ func file_pb_games_xq_xq_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_pb_games_xq_xq_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   14,
+			NumMessages:   18,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

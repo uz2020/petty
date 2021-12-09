@@ -4,6 +4,8 @@ package xq;
 
 service Game {
   rpc Login (LoginRequest) returns (LoginResponse) {}
+  rpc GuestLogin (GuestLoginRequest) returns (GuestLoginResponse) {}
+  rpc Register (RegisterRequest) returns (RegisterResponse) {}  
   
   rpc MyStatus (MyStatusRequest) returns (stream MyStatusResponse) {}
 
@@ -23,6 +25,22 @@ message LoginResponse {
   bool success = 1;
   string token = 2;
 }
+
+message RegisterRequest {
+  string username = 1;
+  string passwd = 2;
+}
+message RegisterResponse {
+  bool success = 1;
+}
+
+
+message GuestLoginRequest {}
+message GuestLoginResponse {
+  bool success = 1;
+  string token = 2;
+}
+
 
 message MyStatusRequest {}
 message MyStatusResponse {

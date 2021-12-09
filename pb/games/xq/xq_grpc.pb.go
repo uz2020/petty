@@ -19,6 +19,8 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type GameClient interface {
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
+	GuestLogin(ctx context.Context, in *GuestLoginRequest, opts ...grpc.CallOption) (*GuestLoginResponse, error)
+	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
 	MyStatus(ctx context.Context, in *MyStatusRequest, opts ...grpc.CallOption) (Game_MyStatusClient, error)
 	GetTables(ctx context.Context, in *TablesRequest, opts ...grpc.CallOption) (*TablesReply, error)
 	JoinTable(ctx context.Context, in *JoinTableRequest, opts ...grpc.CallOption) (*JoinTableResponse, error)
@@ -38,6 +40,24 @@ func NewGameClient(cc grpc.ClientConnInterface) GameClient {
 func (c *gameClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error) {
 	out := new(LoginResponse)
 	err := c.cc.Invoke(ctx, "/xq.Game/Login", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *gameClient) GuestLogin(ctx context.Context, in *GuestLoginRequest, opts ...grpc.CallOption) (*GuestLoginResponse, error) {
+	out := new(GuestLoginResponse)
+	err := c.cc.Invoke(ctx, "/xq.Game/GuestLogin", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *gameClient) Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error) {
+	out := new(RegisterResponse)
+	err := c.cc.Invoke(ctx, "/xq.Game/Register", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -126,6 +146,8 @@ func (c *gameClient) Move(ctx context.Context, in *MoveRequest, opts ...grpc.Cal
 // for forward compatibility
 type GameServer interface {
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
+	GuestLogin(context.Context, *GuestLoginRequest) (*GuestLoginResponse, error)
+	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
 	MyStatus(*MyStatusRequest, Game_MyStatusServer) error
 	GetTables(context.Context, *TablesRequest) (*TablesReply, error)
 	JoinTable(context.Context, *JoinTableRequest) (*JoinTableResponse, error)
@@ -141,6 +163,12 @@ type UnimplementedGameServer struct {
 
 func (UnimplementedGameServer) Login(context.Context, *LoginRequest) (*LoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
+}
+func (UnimplementedGameServer) GuestLogin(context.Context, *GuestLoginRequest) (*GuestLoginResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GuestLogin not implemented")
+}
+func (UnimplementedGameServer) Register(context.Context, *RegisterRequest) (*RegisterResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Register not implemented")
 }
 func (UnimplementedGameServer) MyStatus(*MyStatusRequest, Game_MyStatusServer) error {
 	return status.Errorf(codes.Unimplemented, "method MyStatus not implemented")
@@ -187,6 +215,42 @@ func _Game_Login_Handler(srv interface{}, ctx context.Context, dec func(interfac
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(GameServer).Login(ctx, req.(*LoginRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Game_GuestLogin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GuestLoginRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GameServer).GuestLogin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/xq.Game/GuestLogin",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GameServer).GuestLogin(ctx, req.(*GuestLoginRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Game_Register_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RegisterRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GameServer).Register(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/xq.Game/Register",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GameServer).Register(ctx, req.(*RegisterRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -312,6 +376,14 @@ var Game_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Login",
 			Handler:    _Game_Login_Handler,
+		},
+		{
+			MethodName: "GuestLogin",
+			Handler:    _Game_GuestLogin_Handler,
+		},
+		{
+			MethodName: "Register",
+			Handler:    _Game_Register_Handler,
 		},
 		{
 			MethodName: "GetTables",
