@@ -1,13 +1,11 @@
 package client
 
 import (
-	"bufio"
 	"context"
 	"fmt"
 	"io"
 	"log"
 	"os"
-	"strings"
 
 	pb "github.com/uz2020/petty/pb/games/xq"
 	"github.com/uz2020/petty/xq/config"
@@ -15,7 +13,19 @@ import (
 
 	ecv3 "go.etcd.io/etcd/client/v3"
 	resolver "go.etcd.io/etcd/client/v3/naming/resolver"
+
+	"github.com/manifoldco/promptui"
 )
+
+func pl(a ...interface{}) (n int, err error) {
+	fmt.Printf("\t")
+	return fmt.Println(a...)
+}
+
+func pr(format string, a ...interface{}) (n int, err error) {
+	fmt.Printf("\t")
+	return fmt.Printf(format, a...)
+}
 
 type Client struct {
 	ctx   context.Context
@@ -23,6 +33,77 @@ type Client struct {
 	ecli  *ecv3.Client
 	gc    pb.GameClient
 	creds cred
+}
+
+type Prompter interface {
+	Run() (int, string, error)
+}
+
+type Prompt struct {
+	promptui.Prompt
+}
+
+type Select struct {
+	promptui.Select
+}
+
+func (p Prompt) Run() (int, string, error) {
+	result, err := p.Prompt.Run()
+	return 0, result, err
+}
+
+func (p Select) Run() (int, string, error) {
+	return p.Select.Run()
+}
+
+type Action struct {
+	cmd  int
+	argv []string
+}
+
+type ActionPrompt struct {
+	prompts []Prompter
+}
+
+const (
+	ActionTypeRegister = iota
+	ActionTypeLogin
+	ActionTypeCreateTable
+	ActionTypeJoinTable
+	ActionTypeLeaveTable
+	ActionTypeStartGame
+	ActionTypeMove
+	ActionTypeGetTables
+	ActionTypeStatus
+)
+
+var actionTypes = []string{
+	ActionTypeRegister:    "register",
+	ActionTypeLogin:       "login",
+	ActionTypeCreateTable: "create table",
+	ActionTypeJoinTable:   "join table",
+	ActionTypeLeaveTable:  "leave table",
+	ActionTypeStartGame:   "start game",
+	ActionTypeMove:        "move",
+	ActionTypeGetTables:   "get tables",
+	ActionTypeStatus:      "status",
+}
+
+var ActionPrompts = []ActionPrompt{
+	{
+		prompts: []Prompter{
+			Prompt{
+				promptui.Prompt{
+					Label: "Username",
+				},
+			},
+			Prompt{
+				promptui.Prompt{
+					Label: "Password",
+				},
+			},
+		},
+	},
 }
 
 func NewClient(ctx context.Context) *Client {
@@ -55,11 +136,8 @@ func login(cli *Client, argv []string) {
 }
 
 func register(cli *Client, argv []string) {
-	if len(argv) < 3 {
-		return
-	}
-	name := argv[1]
-	passwd := argv[2]
+	name := argv[0]
+	passwd := argv[1]
 
 	_, err := cli.gc.Register(cli.ctx, &pb.RegisterRequest{
 		Username: name,
@@ -67,11 +145,11 @@ func register(cli *Client, argv []string) {
 	})
 
 	if err != nil {
-		log.Println("register err", err)
+		pl("register err", err)
 		return
 	}
 
-	log.Println("register success")
+	pl("register success")
 }
 
 func createTable(cli *Client, argv []string) {
@@ -92,28 +170,22 @@ func createTable(cli *Client, argv []string) {
 	log.Println("create table success")
 }
 
-func (cli *Client) handleCmd(line string) {
-	argv := strings.Fields(line)
-
-	if len(argv) == 0 {
-		return
-	}
-
-	cmd := argv[0]
+func (cli *Client) handleCmd(act Action) {
+	cmd := act.cmd
+	argv := act.argv
 
 	switch cmd {
-	case "register":
-		go register(cli, argv)
-	case "guest-login":
-	case "create-table":
+	case ActionTypeRegister:
+		register(cli, argv)
+	case ActionTypeCreateTable:
 		go createTable(cli, argv)
-	case "join-table":
-	case "leave-table":
-	case "start-game":
-	case "move":
-	case "login":
+	case ActionTypeJoinTable:
+	case ActionTypeLeaveTable:
+	case ActionTypeStartGame:
+	case ActionTypeMove:
+	case ActionTypeLogin:
 		go login(cli, argv)
-	case "tables":
+	case ActionTypeGetTables:
 		reply, err := cli.gc.GetTables(cli.ctx, &pb.TablesRequest{})
 		if err != nil {
 			fmt.Println("[error]", err)
@@ -121,7 +193,7 @@ func (cli *Client) handleCmd(line string) {
 		}
 
 		fmt.Println(reply)
-	case "status":
+	case ActionTypeStatus:
 		stream, err := cli.gc.MyStatus(cli.ctx, &pb.MyStatusRequest{})
 		if err != nil {
 			log.Fatalf("[error] %v", err)
@@ -191,22 +263,52 @@ func (cli *Client) Run() {
 	if err != nil {
 		log.Fatalf("dial failed: %v", err)
 	}
-	fmt.Printf("dial success %v\n", service)
+	fmt.Printf("----------- dial success %v --------------\n", service)
 
 	defer conn.Close()
 	cli.gc = pb.NewGameClient(conn)
 
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Println("xq client")
-	fmt.Println("---------------------")
+	prompt := promptui.Select{
+		Label: "Select Action",
+		Items: actionTypes,
+	}
+
+	continuePrompt := promptui.Prompt{
+		Label: "continue? (Y/N [default: Y])",
+	}
 
 	for {
-		fmt.Print("-> ")
-		text, _ := reader.ReadString('\n')
-		// convert CRLF to LF
-		text = strings.ReplaceAll(text, "\n", "")
+		argv := []string{}
+		i, result, err := prompt.Run()
 
-		cli.handleCmd(text)
+		if err != nil {
+			pr("Prompt failed %v\n", err)
+			return
+		}
+		cmd := i
+		pr("You chose %q\n", result)
+		for _, p := range ActionPrompts[i].prompts {
+			_, result, err := p.Run()
+			if err != nil {
+				pr("Prompt failed %v\n", err)
+				return
+			}
+			argv = append(argv, result)
+		}
+		cli.handleCmd(Action{
+			cmd:  cmd,
+			argv: argv,
+		})
+
+		result, err = continuePrompt.Run()
+		if err != nil {
+			pr("Prompt failed %v\n", err)
+			return
+		}
+		if result != "" && result != "Y" && result != "y" {
+			fmt.Println("exiting...")
+			os.Exit(0)
+		}
 	}
 }
 
