@@ -230,6 +230,18 @@ func logout(cli *Client, argv []string) {
 }
 
 func joinTable(cli *Client, argv []string) {
+	tableId := argv[0]
+
+	_, err := cli.gc.JoinTable(cli.ctx, &pb.JoinTableRequest{
+		TableId: tableId,
+	})
+
+	if err != nil {
+		pl("join table err", err)
+		return
+	}
+
+	pf("join table success")
 }
 
 func myProfile(cli *Client, argv []string) {
@@ -268,7 +280,10 @@ func (cli *Client) handleCmd(act Action) {
 			return
 		}
 
-		fmt.Println(reply)
+		for _, tb := range reply.Tables {
+			pf("table id: %s\tname: %s\towner:\t%s", tb.TableId, tb.Name, tb.Owner.Username)
+		}
+
 	case ActionTypeStatus:
 		stream, err := cli.gc.MyStatus(cli.ctx, &pb.MyStatusRequest{})
 		if err != nil {

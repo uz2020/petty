@@ -108,6 +108,23 @@ func (gs *GameServer) CreateTable(ctx context.Context, in *pb.CreateTableRequest
 	return out, err
 }
 
+func getUser(ctx context.Context, gs *GameServer, userId string) (*pb.User, error) {
+	user := db.TbUser{}
+	result := gs.dbConn.First(&user, "user_id = ?", userId)
+	err := result.Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.New("user not found")
+		}
+		return nil, err
+	}
+
+	return &pb.User{
+		UserId:   user.UserId,
+		Username: user.Username,
+	}, nil
+}
+
 func (gs *GameServer) GetTables(ctx context.Context, in *pb.TablesRequest) (*pb.TablesReply, error) {
 	player := &Player{}
 	out := &pb.TablesReply{}
@@ -116,7 +133,25 @@ func (gs *GameServer) GetTables(ctx context.Context, in *pb.TablesRequest) (*pb.
 		return nil, err
 	}
 
-	log.Printf("user: %v", player.user)
+	tables := []db.TbTable{}
+	result := gs.dbConn.Find(&tables)
+	err := result.Error
+	if err != nil {
+		return nil, grpc.Errorf(codes.Internal, "db error %v", err)
+	}
+
+	for _, tb := range tables {
+		user, err := getUser(ctx, gs, tb.UserId)
+		if err != nil {
+			return nil, grpc.Errorf(codes.Unavailable, "user not found %v", err)
+		}
+		out.Tables = append(out.Tables, &pb.Table{
+			TableId: tb.TableId,
+			Name:    tb.Name,
+			Owner:   user,
+		})
+	}
+
 	return out, nil
 }
 
@@ -210,7 +245,23 @@ func (gs *GameServer) JoinTable(ctx context.Context, in *pb.JoinTableRequest) (*
 	if err := gs.auth(ctx, player); err != nil {
 		return nil, err
 	}
-	return out, nil
+
+	tableId := in.TableId
+	table := &db.TbTable{}
+	result := gs.dbConn.First(table, "table_id = ?", tableId)
+	err := result.Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, grpc.Errorf(codes.NotFound, "record not found")
+		}
+		return nil, grpc.Errorf(codes.Internal, "db error")
+	}
+
+	err = gs.redisConn.ZAdd(ctx, fmt.Sprintf("zset:join_table_%s:string", tableId), &redis.Z{
+		Score:  float64(time.Now().Unix()),
+		Member: player.user.UserId,
+	}).Err()
+	return out, err
 }
 
 func (gs *GameServer) LeaveTable(ctx context.Context, in *pb.LeaveTableRequest) (*pb.LeaveTableResponse, error) {

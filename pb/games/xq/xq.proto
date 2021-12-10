@@ -50,9 +50,15 @@ message MyStatusResponse {
   int64 move = 2;
 }
 
+message Table {
+  string tableId = 1;
+  string name = 2;
+  User owner = 3;
+}
+
 message TablesRequest {}
 message TablesReply {
-  repeated string tableIds = 1;
+  repeated Table tables = 1;
 }
 
 message JoinTableRequest {
