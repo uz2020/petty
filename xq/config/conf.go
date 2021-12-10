@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"github.com/spf13/viper"
 )
 
@@ -11,7 +12,6 @@ type Conf struct {
 }
 
 func (conf *Conf) Init() {
-	conf.ListenAddr = viper.GetString("LISTEN_ADDR")
 	conf.Service = viper.GetString("SERVICE")
 	conf.EtcdUrl = viper.GetString("ETCD_URL")
 
@@ -21,4 +21,6 @@ func (conf *Conf) Init() {
 	conf.MysqlPasswd = viper.GetString("MYSQL_PASSWD")
 
 	conf.RedisAddr = viper.GetString("REDIS_ADDR")
+	port := viper.GetInt("port")
+	conf.ListenAddr = fmt.Sprintf(":%d", port)
 }

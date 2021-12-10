@@ -408,13 +408,16 @@ func (cli *Client) Run() {
 			}
 			argv = append(argv, result)
 		}
+
+		pl("\n\n")
+
 		cli.handleCmd(Action{
 			cmd:  cmd,
 			argv: argv,
 		})
 
-		pl()
-		pl()
+		pl("\n\n")
+
 		result, err = continuePrompt.Run()
 		if err != nil {
 			pf("Prompt failed %v", err)

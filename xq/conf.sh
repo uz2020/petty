@@ -1,6 +1,5 @@
 #!/bin/sh
 
-export SERVER_LISTEN_ADDR=":50000"
 export SERVER_SERVICE="pet/games/xq"
 export SERVER_ETCD_URL="http://localhost:2379"
 

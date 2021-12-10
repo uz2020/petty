@@ -18,10 +18,10 @@ var serveCmd = &cobra.Command{
 	Use:   "serve",
 	Short: "Start app",
 	Run: func(cmd *cobra.Command, args []string) {
-		if viper.Get("LISTEN_ADDR") == nil {
-			panic("LISTEN_ADDR env key not found")
+		if viper.Get("port") == nil {
+			panic("port not found")
 		}
-		addr := fmt.Sprintf("%v", viper.Get("LISTEN_ADDR"))
+		addr := fmt.Sprintf(":%d", viper.GetInt("port"))
 
 		initApp(addr)
 	},
@@ -47,5 +47,7 @@ func initApp(addr string) {
 }
 
 func init() {
+	serveCmd.Flags().Int("port", 50000, "Port to run Application server on")
+	viper.BindPFlag("port", serveCmd.Flags().Lookup("port"))
 	rootCmd.AddCommand(serveCmd)
 }
