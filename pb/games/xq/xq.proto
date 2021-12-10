@@ -46,27 +46,27 @@ message MyStatusResponse {
 
 message TablesRequest {}
 message TablesReply {
-  repeated int64 tableIds = 1;
+  repeated string tableIds = 1;
 }
 
 message JoinTableRequest {
-  int64 tableId = 1;
+  string tableId = 1;
 }
 message JoinTableResponse {
 }
 message LeaveTableRequest {
-  int64 tableId = 1;
+  string tableId = 1;
 }
 message LeaveTableResponse {}
 
 message StartGameRequest {
-  int64 tableId = 1;
+  string tableId = 1;
 }
 message StartGameResponse {
 }
 
 message MoveRequest {
-  int64 tableId = 1;
+  string tableId = 1;
   int64 move = 2;
 }
 message MoveResponse {}
@@ -75,5 +75,5 @@ message CreateTableRequest {
   string name = 1;
 }
 message CreateTableResponse {
-  int64 tableId = 1;
+  string tableId = 1;
 }

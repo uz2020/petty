@@ -85,7 +85,7 @@ func (gs *GameServer) CreateTable(ctx context.Context, in *pb.CreateTableRequest
 		return nil, err
 	}
 
-	log.Printf("user: %v", user)
+	log.Printf("create table: %v", in.Name)
 
 	table := db.TbTable{}
 	table.CreatedAt = time.Now()
@@ -94,6 +94,7 @@ func (gs *GameServer) CreateTable(ctx context.Context, in *pb.CreateTableRequest
 	table.TableId = utils.GenUserId()
 	result := gs.dbConn.Create(&table)
 	err := result.Error
+	out.TableId = table.TableId
 	return out, err
 }
 

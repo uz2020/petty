@@ -22,9 +22,9 @@ func pl(a ...interface{}) (n int, err error) {
 	return fmt.Println(a...)
 }
 
-func pr(format string, a ...interface{}) (n int, err error) {
+func pf(format string, a ...interface{}) (n int, err error) {
 	fmt.Printf("\t")
-	return fmt.Printf(format, a...)
+	return fmt.Printf(format+"\n", a...)
 }
 
 type Client struct {
@@ -90,6 +90,7 @@ var actionTypes = []string{
 }
 
 var ActionPrompts = []ActionPrompt{
+	// register
 	{
 		prompts: []Prompter{
 			Prompt{
@@ -104,6 +105,41 @@ var ActionPrompts = []ActionPrompt{
 			},
 		},
 	},
+	// login
+	{
+		prompts: []Prompter{
+			Prompt{
+				promptui.Prompt{
+					Label: "Username",
+				},
+			},
+			Prompt{
+				promptui.Prompt{
+					Label: "Password",
+				},
+			},
+		},
+	},
+	// create table
+	{
+		prompts: []Prompter{
+			Prompt{
+				promptui.Prompt{
+					Label: "Name",
+				},
+			},
+		},
+	},
+	// join table
+	{
+		prompts: []Prompter{
+			Prompt{
+				promptui.Prompt{
+					Label: "Table Id",
+				},
+			},
+		},
+	},
 }
 
 func NewClient(ctx context.Context) *Client {
@@ -114,11 +150,8 @@ func NewClient(ctx context.Context) *Client {
 }
 
 func login(cli *Client, argv []string) {
-	if len(argv) < 3 {
-		return
-	}
-	name := argv[1]
-	passwd := argv[2]
+	name := argv[0]
+	passwd := argv[1]
 
 	resp, err := cli.gc.Login(cli.ctx, &pb.LoginRequest{
 		Username: name,
@@ -126,13 +159,13 @@ func login(cli *Client, argv []string) {
 	})
 
 	if err != nil {
-		log.Println("login err", err)
+		pl("login err", err)
 		return
 	}
 
 	token := resp.Token
 	cli.creds.token = token
-	log.Println("login success", token)
+	pl("login success", token)
 }
 
 func register(cli *Client, argv []string) {
@@ -153,21 +186,21 @@ func register(cli *Client, argv []string) {
 }
 
 func createTable(cli *Client, argv []string) {
-	if len(argv) < 2 {
-		return
-	}
-	name := argv[1]
+	name := argv[0]
 
-	_, err := cli.gc.CreateTable(cli.ctx, &pb.CreateTableRequest{
+	resp, err := cli.gc.CreateTable(cli.ctx, &pb.CreateTableRequest{
 		Name: name,
 	})
 
 	if err != nil {
-		log.Println("create table err", err)
+		pl("create table err", err)
 		return
 	}
 
-	log.Println("create table success")
+	pf("create table success, table id %s", resp.TableId)
+}
+
+func joinTable(cli *Client, argv []string) {
 }
 
 func (cli *Client) handleCmd(act Action) {
@@ -178,13 +211,14 @@ func (cli *Client) handleCmd(act Action) {
 	case ActionTypeRegister:
 		register(cli, argv)
 	case ActionTypeCreateTable:
-		go createTable(cli, argv)
+		createTable(cli, argv)
 	case ActionTypeJoinTable:
+		joinTable(cli, argv)
 	case ActionTypeLeaveTable:
 	case ActionTypeStartGame:
 	case ActionTypeMove:
 	case ActionTypeLogin:
-		go login(cli, argv)
+		login(cli, argv)
 	case ActionTypeGetTables:
 		reply, err := cli.gc.GetTables(cli.ctx, &pb.TablesRequest{})
 		if err != nil {
@@ -269,8 +303,9 @@ func (cli *Client) Run() {
 	cli.gc = pb.NewGameClient(conn)
 
 	prompt := promptui.Select{
-		Label: "Select Action",
-		Items: actionTypes,
+		Label:    "Select Action",
+		Items:    actionTypes,
+		HideHelp: true,
 	}
 
 	continuePrompt := promptui.Prompt{
@@ -282,15 +317,15 @@ func (cli *Client) Run() {
 		i, result, err := prompt.Run()
 
 		if err != nil {
-			pr("Prompt failed %v\n", err)
+			pf("Prompt failed %v", err)
 			return
 		}
 		cmd := i
-		pr("You chose %q\n", result)
+		pf("You chose %q\n", result)
 		for _, p := range ActionPrompts[i].prompts {
 			_, result, err := p.Run()
 			if err != nil {
-				pr("Prompt failed %v\n", err)
+				pf("Prompt failed %v", err)
 				return
 			}
 			argv = append(argv, result)
@@ -302,11 +337,11 @@ func (cli *Client) Run() {
 
 		result, err = continuePrompt.Run()
 		if err != nil {
-			pr("Prompt failed %v\n", err)
+			pf("Prompt failed %v", err)
 			return
 		}
 		if result != "" && result != "Y" && result != "y" {
-			fmt.Println("exiting...")
+			pl("exited...")
 			os.Exit(0)
 		}
 	}

@@ -45,3 +45,9 @@ sh run-cli.sh
 # 查看table列表
 -> tables
 ```
+
+### Todo
+
+1. auto login
+2. status
+   服务端推流。广播消息，聊天消息，系统通知等。
