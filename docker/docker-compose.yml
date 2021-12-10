@@ -39,3 +39,27 @@ services:
     container_name: redis-petty
     ports:
       - 6379:6379
+  nsqlookupd:
+    image: nsqio/nsq
+    command: /nsqlookupd
+    container_name: nsqlookupd-petty
+    ports:
+      - "4160"
+      - "4161"
+  nsqd:
+    image: nsqio/nsq
+    command: /nsqd --lookupd-tcp-address=nsqlookupd:4160
+    container_name: nsqd-petty
+    depends_on:
+      - nsqlookupd
+    ports:
+      - "4150"
+      - "4151"
+  nsqadmin:
+    image: nsqio/nsq
+    command: /nsqadmin --lookupd-http-address=nsqlookupd:4161
+    container_name: nsqadmin-petty
+    depends_on:
+      - nsqlookupd
+    ports:
+      - "4171"

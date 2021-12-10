@@ -3,7 +3,6 @@ package client
 import (
 	"context"
 	"fmt"
-	"io"
 	"log"
 
 	"github.com/spf13/viper"
@@ -34,6 +33,7 @@ type Client struct {
 	gc     pb.GameClient
 	creds  cred
 	player *pb.Player
+	ss     pb.Game_MyStatusClient
 }
 
 type Prompter interface {
@@ -255,6 +255,15 @@ func myProfile(cli *Client, argv []string) {
 	pl("----------------------------")
 }
 
+func statusStream(cli *Client, argv []string) {
+	stream, err := cli.gc.MyStatus(cli.ctx, &pb.MyStatusRequest{})
+	if err != nil {
+		pf("status stream failed %v", err)
+	}
+	cli.ss = stream
+	pf("status stream established")
+}
+
 func (cli *Client) handleCmd(act Action) {
 	cmd := act.cmd
 	argv := act.argv
@@ -285,41 +294,8 @@ func (cli *Client) handleCmd(act Action) {
 		for _, tb := range reply.Tables {
 			pf("table id: %s\tname: %s\towner:\t%s", tb.TableId, tb.Name, tb.Owner.Username)
 		}
-
 	case ActionTypeStatus:
-		stream, err := cli.gc.MyStatus(cli.ctx, &pb.MyStatusRequest{})
-		if err != nil {
-			log.Fatalf("[error] %v", err)
-			return
-		}
-
-		ctx := stream.Context()
-		done := make(chan bool)
-
-		go func() {
-			for {
-				resp, err := stream.Recv()
-				if err == io.EOF {
-					close(done)
-					return
-				}
-				if err != nil {
-					log.Fatalf("can not receive %v", err)
-				}
-				ts := resp.Time
-				log.Printf("new timestamp %d received", ts)
-			}
-		}()
-
-		go func() {
-			<-ctx.Done()
-			if err := ctx.Err(); err != nil {
-				log.Println(err)
-			}
-			close(done)
-		}()
-
-		<-done
+		statusStream(cli, argv)
 	}
 }
 
@@ -389,6 +365,7 @@ func (cli *Client) Run() {
 			cli.player = resp.Player
 
 			myProfile(cli, []string{})
+			statusStream(cli, []string{})
 		}
 
 		argv := []string{}

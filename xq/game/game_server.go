@@ -26,10 +26,11 @@ import (
 
 type GameServer struct {
 	pb.UnimplementedGameServer
-	conf      config.Conf
-	ctx       context.Context
-	dbConn    *gorm.DB
-	redisConn *redis.Client
+	conf       config.Conf
+	ctx        context.Context
+	dbConn     *gorm.DB
+	redisConn  *redis.Client
+	playerSrvs map[string]pb.Game_MyStatusServer
 }
 
 type Player struct {
@@ -39,6 +40,7 @@ type Player struct {
 
 func (gs *GameServer) init(ctx context.Context) {
 	gs.ctx = ctx
+	gs.playerSrvs = make(map[string]pb.Game_MyStatusServer)
 	gs.conf.Init()
 	conf := &gs.conf
 	dbConn, err := db.InitDb(conf.MysqlUser, conf.MysqlPasswd, conf.MysqlAddr, conf.MysqlDb)
@@ -223,19 +225,17 @@ func (gs *GameServer) Logout(ctx context.Context, in *pb.LogoutRequest) (*pb.Log
 	return out, nil
 }
 
-func (*GameServer) MyStatus(r *pb.MyStatusRequest, srv pb.Game_MyStatusServer) error {
+// 建立流推送
+func (gs *GameServer) MyStatus(r *pb.MyStatusRequest, srv pb.Game_MyStatusServer) error {
 	ctx := srv.Context()
+	player := &Player{}
 
-	for i := 0; i < 5; i++ {
-		select {
-		case <-ctx.Done():
-			return ctx.Err()
-		default:
-		}
-		now := time.Now().Unix()
-		srv.Send(&pb.MyStatusResponse{Time: now})
-		time.Sleep(time.Second)
+	if err := gs.auth(ctx, player); err != nil {
+		return err
 	}
+
+	gs.playerSrvs[player.user.UserId] = srv
+
 	return nil
 }
 
