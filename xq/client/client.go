@@ -246,11 +246,13 @@ func joinTable(cli *Client, argv []string) {
 
 func myProfile(cli *Client, argv []string) {
 	if cli.player == nil {
-		pl("please login first")
+		pl("********* please login first ********")
 		return
 	}
+	pl("------------- me -----------")
 	pl("username:", cli.player.User.Username)
 	pl("user_id:", cli.player.User.UserId)
+	pl("----------------------------")
 }
 
 func (cli *Client) handleCmd(act Action) {
@@ -334,13 +336,14 @@ func (*cred) RequireTransportSecurity() bool {
 }
 
 func (cli *Client) Run() {
-	viper.SetConfigName("cli-config")
+	configPath := "cli-config.yaml"
+	viper.SetConfigName(configPath)
 	viper.AddConfigPath("./")
 	viper.ReadInConfig()
 	defer func() {
-		err := viper.WriteConfig()
+		err := viper.WriteConfigAs(configPath)
 		if err != nil {
-			pf("error %v", err)
+			pf("write config failed %s", err)
 		}
 	}()
 
@@ -384,6 +387,8 @@ func (cli *Client) Run() {
 				pf("get profile failed %v", err)
 			}
 			cli.player = resp.Player
+
+			myProfile(cli, []string{})
 		}
 
 		argv := []string{}
@@ -408,6 +413,8 @@ func (cli *Client) Run() {
 			argv: argv,
 		})
 
+		pl()
+		pl()
 		result, err = continuePrompt.Run()
 		if err != nil {
 			pf("Prompt failed %v", err)
