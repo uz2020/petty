@@ -32,6 +32,11 @@ type GameServer struct {
 	redisConn *redis.Client
 }
 
+type Player struct {
+	user db.TbUser
+	md   metadata.MD
+}
+
 func (gs *GameServer) init(ctx context.Context) {
 	gs.ctx = ctx
 	gs.conf.Init()
@@ -45,12 +50,17 @@ func (gs *GameServer) init(ctx context.Context) {
 	registerService(conf.ListenAddr, conf.Service, conf.EtcdUrl, gs)
 }
 
-func (gs *GameServer) auth(ctx context.Context, user *db.TbUser) error {
+func (gs *GameServer) metadata() (metadata.MD, bool) {
+	return metadata.FromIncomingContext(gs.ctx)
+}
+
+func (gs *GameServer) auth(ctx context.Context, player *Player) error {
 	var userId, token string
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return grpc.Errorf(codes.Unauthenticated, "missing credentials 1")
 	}
+	player.md = md
 
 	val, ok := md["token"]
 	if !ok {
@@ -64,7 +74,7 @@ func (gs *GameServer) auth(ctx context.Context, user *db.TbUser) error {
 		return grpc.Errorf(codes.Unauthenticated, "invalid token")
 	}
 
-	result := gs.dbConn.First(user, "user_id = ?", userId)
+	result := gs.dbConn.First(&player.user, "user_id = ?", userId)
 	err = result.Error
 
 	if err != nil {
@@ -78,10 +88,10 @@ func (gs *GameServer) auth(ctx context.Context, user *db.TbUser) error {
 }
 
 func (gs *GameServer) CreateTable(ctx context.Context, in *pb.CreateTableRequest) (*pb.CreateTableResponse, error) {
-	user := db.TbUser{}
+	player := &Player{}
 	out := &pb.CreateTableResponse{}
 
-	if err := gs.auth(ctx, &user); err != nil {
+	if err := gs.auth(ctx, player); err != nil {
 		return nil, err
 	}
 
@@ -90,7 +100,7 @@ func (gs *GameServer) CreateTable(ctx context.Context, in *pb.CreateTableRequest
 	table := db.TbTable{}
 	table.CreatedAt = time.Now()
 	table.Name = in.Name
-	table.UserId = user.UserId
+	table.UserId = player.user.UserId
 	table.TableId = utils.GenUserId()
 	result := gs.dbConn.Create(&table)
 	err := result.Error
@@ -99,14 +109,14 @@ func (gs *GameServer) CreateTable(ctx context.Context, in *pb.CreateTableRequest
 }
 
 func (gs *GameServer) GetTables(ctx context.Context, in *pb.TablesRequest) (*pb.TablesReply, error) {
-	user := db.TbUser{}
+	player := &Player{}
 	out := &pb.TablesReply{}
 
-	if err := gs.auth(ctx, &user); err != nil {
+	if err := gs.auth(ctx, player); err != nil {
 		return nil, err
 	}
 
-	log.Printf("user: %v", user)
+	log.Printf("user: %v", player.user)
 	return out, nil
 }
 
@@ -158,6 +168,26 @@ func (gs *GameServer) Login(ctx context.Context, in *pb.LoginRequest) (*pb.Login
 	return out, nil
 }
 
+func (gs *GameServer) Logout(ctx context.Context, in *pb.LogoutRequest) (*pb.LogoutResponse, error) {
+	player := &Player{}
+	out := &pb.LogoutResponse{}
+
+	if err := gs.auth(ctx, player); err != nil {
+		return nil, err
+	}
+
+	md := player.md
+	val := md["token"]
+
+	key := fmt.Sprintf("user_sid_%s", val[0])
+	err := gs.redisConn.Del(ctx, key).Err()
+	log.Println("logout", key)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (*GameServer) MyStatus(r *pb.MyStatusRequest, srv pb.Game_MyStatusServer) error {
 	ctx := srv.Context()
 
@@ -175,36 +205,36 @@ func (*GameServer) MyStatus(r *pb.MyStatusRequest, srv pb.Game_MyStatusServer) e
 }
 
 func (gs *GameServer) JoinTable(ctx context.Context, in *pb.JoinTableRequest) (*pb.JoinTableResponse, error) {
-	user := db.TbUser{}
+	player := &Player{}
 	out := &pb.JoinTableResponse{}
-	if err := gs.auth(ctx, &user); err != nil {
+	if err := gs.auth(ctx, player); err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
 func (gs *GameServer) LeaveTable(ctx context.Context, in *pb.LeaveTableRequest) (*pb.LeaveTableResponse, error) {
-	user := db.TbUser{}
+	player := &Player{}
 	out := &pb.LeaveTableResponse{}
-	if err := gs.auth(ctx, &user); err != nil {
+	if err := gs.auth(ctx, player); err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
 func (gs *GameServer) StartGame(ctx context.Context, in *pb.StartGameRequest) (*pb.StartGameResponse, error) {
-	user := db.TbUser{}
+	player := &Player{}
 	out := &pb.StartGameResponse{}
-	if err := gs.auth(ctx, &user); err != nil {
+	if err := gs.auth(ctx, player); err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
 func (gs *GameServer) Move(ctx context.Context, in *pb.MoveRequest) (*pb.MoveResponse, error) {
-	user := db.TbUser{}
+	player := &Player{}
 	out := &pb.MoveResponse{}
-	if err := gs.auth(ctx, &user); err != nil {
+	if err := gs.auth(ctx, player); err != nil {
 		return nil, err
 	}
 	return out, nil

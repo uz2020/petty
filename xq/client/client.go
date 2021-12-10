@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"os"
 
+	"github.com/spf13/viper"
 	pb "github.com/uz2020/petty/pb/games/xq"
 	"github.com/uz2020/petty/xq/config"
 	"google.golang.org/grpc"
@@ -68,6 +68,7 @@ type ActionPrompt struct {
 const (
 	ActionTypeRegister = iota
 	ActionTypeLogin
+	ActionTypeLogout
 	ActionTypeCreateTable
 	ActionTypeJoinTable
 	ActionTypeLeaveTable
@@ -80,6 +81,7 @@ const (
 var actionTypes = []string{
 	ActionTypeRegister:    "register",
 	ActionTypeLogin:       "login",
+	ActionTypeLogout:      "logout",
 	ActionTypeCreateTable: "create table",
 	ActionTypeJoinTable:   "join table",
 	ActionTypeLeaveTable:  "leave table",
@@ -120,6 +122,8 @@ var ActionPrompts = []ActionPrompt{
 			},
 		},
 	},
+	// logout
+	{},
 	// create table
 	{
 		prompts: []Prompter{
@@ -145,7 +149,6 @@ var ActionPrompts = []ActionPrompt{
 func NewClient(ctx context.Context) *Client {
 	cli := &Client{ctx: ctx}
 	cli.conf.Init()
-	go cli.Run()
 	return cli
 }
 
@@ -164,7 +167,7 @@ func login(cli *Client, argv []string) {
 	}
 
 	token := resp.Token
-	cli.creds.token = token
+	viper.Set("token", token)
 	pl("login success", token)
 }
 
@@ -200,6 +203,16 @@ func createTable(cli *Client, argv []string) {
 	pf("create table success, table id %s", resp.TableId)
 }
 
+func logout(cli *Client, argv []string) {
+	_, err := cli.gc.Logout(cli.ctx, &pb.LogoutRequest{})
+	if err != nil {
+		pl("logout err", err)
+		return
+	}
+	pl("logout success")
+	viper.Set("token", "")
+}
+
 func joinTable(cli *Client, argv []string) {
 }
 
@@ -219,6 +232,8 @@ func (cli *Client) handleCmd(act Action) {
 	case ActionTypeMove:
 	case ActionTypeLogin:
 		login(cli, argv)
+	case ActionTypeLogout:
+		logout(cli, argv)
 	case ActionTypeGetTables:
 		reply, err := cli.gc.GetTables(cli.ctx, &pb.TablesRequest{})
 		if err != nil {
@@ -264,13 +279,11 @@ func (cli *Client) handleCmd(act Action) {
 	}
 }
 
-type cred struct {
-	token string
-}
+type cred struct{}
 
 func (c *cred) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
 	return map[string]string{
-		"token": c.token,
+		"token": viper.GetString("token"),
 	}, nil
 }
 
@@ -279,6 +292,16 @@ func (*cred) RequireTransportSecurity() bool {
 }
 
 func (cli *Client) Run() {
+	viper.SetConfigName("cli-config")
+	viper.AddConfigPath("./")
+	viper.ReadInConfig()
+	defer func() {
+		err := viper.WriteConfig()
+		if err != nil {
+			pf("error %v", err)
+		}
+	}()
+
 	ecli, err := ecv3.NewFromURL(cli.conf.EtcdUrl)
 	if err != nil {
 		log.Fatalf("new client failed: %v", err)
@@ -342,7 +365,7 @@ func (cli *Client) Run() {
 		}
 		if result != "" && result != "Y" && result != "y" {
 			pl("exited...")
-			os.Exit(0)
+			break
 		}
 	}
 }

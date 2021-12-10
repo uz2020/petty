@@ -4,6 +4,7 @@ package xq;
 
 service Game {
   rpc Login (LoginRequest) returns (LoginResponse) {}
+  rpc Logout (LogoutRequest) returns (LogoutResponse) {}
   rpc GuestLogin (GuestLoginRequest) returns (GuestLoginResponse) {}
   rpc Register (RegisterRequest) returns (RegisterResponse) {}  
   
@@ -17,6 +18,9 @@ service Game {
   rpc StartGame (StartGameRequest) returns (StartGameResponse) {}
   rpc Move (MoveRequest) returns (MoveResponse) {}
 }
+
+message LogoutRequest {}
+message LogoutResponse {}
 
 message LoginRequest {
   string username = 1;
