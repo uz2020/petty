@@ -29,6 +29,7 @@ type GameClient interface {
 	LeaveTable(ctx context.Context, in *LeaveTableRequest, opts ...grpc.CallOption) (*LeaveTableResponse, error)
 	StartGame(ctx context.Context, in *StartGameRequest, opts ...grpc.CallOption) (*StartGameResponse, error)
 	Move(ctx context.Context, in *MoveRequest, opts ...grpc.CallOption) (*MoveResponse, error)
+	GetMyProfile(ctx context.Context, in *GetMyProfileRequest, opts ...grpc.CallOption) (*GetMyProfileResponse, error)
 }
 
 type gameClient struct {
@@ -161,6 +162,15 @@ func (c *gameClient) Move(ctx context.Context, in *MoveRequest, opts ...grpc.Cal
 	return out, nil
 }
 
+func (c *gameClient) GetMyProfile(ctx context.Context, in *GetMyProfileRequest, opts ...grpc.CallOption) (*GetMyProfileResponse, error) {
+	out := new(GetMyProfileResponse)
+	err := c.cc.Invoke(ctx, "/xq.Game/GetMyProfile", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // GameServer is the server API for Game service.
 // All implementations must embed UnimplementedGameServer
 // for forward compatibility
@@ -176,6 +186,7 @@ type GameServer interface {
 	LeaveTable(context.Context, *LeaveTableRequest) (*LeaveTableResponse, error)
 	StartGame(context.Context, *StartGameRequest) (*StartGameResponse, error)
 	Move(context.Context, *MoveRequest) (*MoveResponse, error)
+	GetMyProfile(context.Context, *GetMyProfileRequest) (*GetMyProfileResponse, error)
 	mustEmbedUnimplementedGameServer()
 }
 
@@ -215,6 +226,9 @@ func (UnimplementedGameServer) StartGame(context.Context, *StartGameRequest) (*S
 }
 func (UnimplementedGameServer) Move(context.Context, *MoveRequest) (*MoveResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Move not implemented")
+}
+func (UnimplementedGameServer) GetMyProfile(context.Context, *GetMyProfileRequest) (*GetMyProfileResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMyProfile not implemented")
 }
 func (UnimplementedGameServer) mustEmbedUnimplementedGameServer() {}
 
@@ -430,6 +444,24 @@ func _Game_Move_Handler(srv interface{}, ctx context.Context, dec func(interface
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Game_GetMyProfile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetMyProfileRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GameServer).GetMyProfile(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/xq.Game/GetMyProfile",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GameServer).GetMyProfile(ctx, req.(*GetMyProfileRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Game_ServiceDesc is the grpc.ServiceDesc for Game service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -476,6 +508,10 @@ var Game_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Move",
 			Handler:    _Game_Move_Handler,
+		},
+		{
+			MethodName: "GetMyProfile",
+			Handler:    _Game_GetMyProfile_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

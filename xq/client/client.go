@@ -28,11 +28,12 @@ func pf(format string, a ...interface{}) (n int, err error) {
 }
 
 type Client struct {
-	ctx   context.Context
-	conf  config.Conf
-	ecli  *ecv3.Client
-	gc    pb.GameClient
-	creds cred
+	ctx    context.Context
+	conf   config.Conf
+	ecli   *ecv3.Client
+	gc     pb.GameClient
+	creds  cred
+	player *pb.Player
 }
 
 type Prompter interface {
@@ -76,6 +77,7 @@ const (
 	ActionTypeMove
 	ActionTypeGetTables
 	ActionTypeStatus
+	ActionTypeMyProfile
 )
 
 var actionTypes = []string{
@@ -89,6 +91,7 @@ var actionTypes = []string{
 	ActionTypeMove:        "move",
 	ActionTypeGetTables:   "get tables",
 	ActionTypeStatus:      "status",
+	ActionTypeMyProfile:   "my profile",
 }
 
 var ActionPrompts = []ActionPrompt{
@@ -144,6 +147,18 @@ var ActionPrompts = []ActionPrompt{
 			},
 		},
 	},
+	// leave table
+	{},
+	// start game
+	{},
+	// move
+	{},
+	// get tables
+	{},
+	// status
+	{},
+	// my profile
+	{},
 }
 
 func NewClient(ctx context.Context) *Client {
@@ -211,9 +226,19 @@ func logout(cli *Client, argv []string) {
 	}
 	pl("logout success")
 	viper.Set("token", "")
+	cli.player = nil
 }
 
 func joinTable(cli *Client, argv []string) {
+}
+
+func myProfile(cli *Client, argv []string) {
+	if cli.player == nil {
+		pl("please login first")
+		return
+	}
+	pl("username:", cli.player.User.Username)
+	pl("user_id:", cli.player.User.UserId)
 }
 
 func (cli *Client) handleCmd(act Action) {
@@ -221,6 +246,8 @@ func (cli *Client) handleCmd(act Action) {
 	argv := act.argv
 
 	switch cmd {
+	case ActionTypeMyProfile:
+		myProfile(cli, argv)
 	case ActionTypeRegister:
 		register(cli, argv)
 	case ActionTypeCreateTable:
@@ -336,6 +363,14 @@ func (cli *Client) Run() {
 	}
 
 	for {
+		if viper.GetString("token") != "" && cli.player == nil {
+			resp, err := cli.gc.GetMyProfile(cli.ctx, &pb.GetMyProfileRequest{})
+			if err != nil {
+				pf("get profile failed %v", err)
+			}
+			cli.player = resp.Player
+		}
+
 		argv := []string{}
 		i, result, err := prompt.Run()
 

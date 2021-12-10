@@ -240,6 +240,22 @@ func (gs *GameServer) Move(ctx context.Context, in *pb.MoveRequest) (*pb.MoveRes
 	return out, nil
 }
 
+func (gs *GameServer) GetMyProfile(ctx context.Context, in *pb.GetMyProfileRequest) (*pb.GetMyProfileResponse, error) {
+	player := &Player{}
+	out := &pb.GetMyProfileResponse{}
+	if err := gs.auth(ctx, player); err != nil {
+		return nil, err
+	}
+
+	out.Player = &pb.Player{
+		User: &pb.User{
+			UserId:   player.user.UserId,
+			Username: player.user.Username,
+		},
+	}
+	return out, nil
+}
+
 func (*GameServer) Shutdown(ctx context.Context) error {
 	return nil
 }
