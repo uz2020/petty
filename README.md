@@ -37,15 +37,6 @@ cd xq
 sh run-cli.sh
 ```
 
-```
-# 登录 (username/password)
--> login a a
-# 注册 (username/password)
--> register a a
-# 查看table列表
--> tables
-```
-
 ### Todo
 
 1. auto login
