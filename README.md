@@ -51,3 +51,8 @@ sh run-cli.sh
 1. auto login
 2. status
    服务端推流。广播消息，聊天消息，系统通知等。
+3. 添加好友
+4. 搜索，自动补全
+5. recent logs, common logs
+6. counters, statistics
+7. distributed locks
