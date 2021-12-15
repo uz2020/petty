@@ -63,42 +63,14 @@ type Action struct {
 }
 
 type ActionPrompt struct {
+	name    string
 	prompts []Prompter
+	f       func(*Client, []string)
 }
 
-const (
-	ActionTypeRegister = iota
-	ActionTypeLogin
-	ActionTypeLogout
-	ActionTypeCreateTable
-	ActionTypeJoinTable
-	ActionTypeLeaveTable
-	ActionTypeStartGame
-	ActionTypeMove
-	ActionTypeGetTables
-	ActionTypeStatus
-	ActionTypeMyProfile
-	ActionTypeGetPlayer
-)
-
-var actionTypes = []string{
-	ActionTypeRegister:    "register",
-	ActionTypeLogin:       "login",
-	ActionTypeLogout:      "logout",
-	ActionTypeCreateTable: "create table",
-	ActionTypeJoinTable:   "join table",
-	ActionTypeLeaveTable:  "leave table",
-	ActionTypeStartGame:   "start game",
-	ActionTypeMove:        "move",
-	ActionTypeGetTables:   "get tables",
-	ActionTypeStatus:      "status",
-	ActionTypeMyProfile:   "my profile",
-	ActionTypeGetPlayer:   "get player",
-}
-
-var ActionPrompts = []ActionPrompt{
-	// register
+var actionPrompts = []ActionPrompt{
 	{
+		name: "register",
 		prompts: []Prompter{
 			Prompt{
 				promptui.Prompt{
@@ -111,9 +83,10 @@ var ActionPrompts = []ActionPrompt{
 				},
 			},
 		},
+		f: actionHandlerStub,
 	},
-	// login
 	{
+		name: "login",
 		prompts: []Prompter{
 			Prompt{
 				promptui.Prompt{
@@ -126,11 +99,14 @@ var ActionPrompts = []ActionPrompt{
 				},
 			},
 		},
+		f: login,
 	},
-	// logout
-	{},
-	// create table
 	{
+		name: "logout",
+		f:    logout,
+	},
+	{
+		name: "create table",
 		prompts: []Prompter{
 			Prompt{
 				promptui.Prompt{
@@ -138,9 +114,10 @@ var ActionPrompts = []ActionPrompt{
 				},
 			},
 		},
+		f: createTable,
 	},
-	// join table
 	{
+		name: "join table",
 		prompts: []Prompter{
 			Prompt{
 				promptui.Prompt{
@@ -148,21 +125,34 @@ var ActionPrompts = []ActionPrompt{
 				},
 			},
 		},
+		f: joinTable,
 	},
-	// leave table
-	{},
-	// start game
-	{},
-	// move
-	{},
-	// get tables
-	{},
-	// status
-	{},
-	// my profile
-	{},
-	// get player
 	{
+		name: "leave table",
+		f:    actionHandlerStub,
+	},
+	{
+		name: "start game",
+		f:    actionHandlerStub,
+	},
+	{
+		name: "move",
+		f:    actionHandlerStub,
+	},
+	{
+		name: "get tables",
+		f:    getTables,
+	},
+	{
+		name: "status",
+		f:    statusStream,
+	},
+	{
+		name: "my profile",
+		f:    myProfile,
+	},
+	{
+		name: "get player",
 		prompts: []Prompter{
 			Prompt{
 				promptui.Prompt{
@@ -170,6 +160,7 @@ var ActionPrompts = []ActionPrompt{
 				},
 			},
 		},
+		f: getPlayer,
 	},
 }
 
@@ -178,6 +169,8 @@ func NewClient(ctx context.Context) *Client {
 	cli.conf.Init()
 	return cli
 }
+
+func actionHandlerStub(cli *Client, argv []string) {}
 
 func login(cli *Client, argv []string) {
 	name := argv[0]
@@ -241,6 +234,18 @@ func logout(cli *Client, argv []string) {
 	cli.player = nil
 }
 
+func getTables(cli *Client, argv []string) {
+	tbs, err := cli.gc.GetTables(cli.ctx, &pb.TablesRequest{})
+	if err != nil {
+		pl("get tables err", err)
+		return
+	}
+
+	for _, tb := range tbs.Tables {
+		pf("name: %s, owner: %s, id: %s", tb.Name, tb.Owner, tb.TableId)
+	}
+}
+
 func joinTable(cli *Client, argv []string) {
 	tableId := argv[0]
 
@@ -291,36 +296,11 @@ func (cli *Client) handleCmd(act Action) {
 	cmd := act.cmd
 	argv := act.argv
 
-	switch cmd {
-	case ActionTypeMyProfile:
-		myProfile(cli, argv)
-	case ActionTypeRegister:
-		register(cli, argv)
-	case ActionTypeCreateTable:
-		createTable(cli, argv)
-	case ActionTypeJoinTable:
-		joinTable(cli, argv)
-	case ActionTypeLeaveTable:
-	case ActionTypeStartGame:
-	case ActionTypeMove:
-	case ActionTypeLogin:
-		login(cli, argv)
-	case ActionTypeLogout:
-		logout(cli, argv)
-	case ActionTypeGetTables:
-		reply, err := cli.gc.GetTables(cli.ctx, &pb.TablesRequest{})
-		if err != nil {
-			fmt.Println("[error]", err)
-			return
+	for i, ap := range actionPrompts {
+		if i == cmd {
+			ap.f(cli, argv)
+			break
 		}
-
-		for _, tb := range reply.Tables {
-			pf("table id: %s\tname: %s\towner:\t%s", tb.TableId, tb.Name, tb.Owner.Username)
-		}
-	case ActionTypeStatus:
-		statusStream(cli, argv)
-	case ActionTypeGetPlayer:
-		getPlayer(cli, argv)
 	}
 }
 
@@ -371,6 +351,11 @@ func (cli *Client) Run() {
 	defer conn.Close()
 	cli.gc = pb.NewGameClient(conn)
 
+	actionTypes := []string{}
+	for _, ap := range actionPrompts {
+		actionTypes = append(actionTypes, ap.name)
+	}
+
 	prompt := promptui.Select{
 		Label:    "Select Action",
 		Items:    actionTypes,
@@ -402,7 +387,7 @@ func (cli *Client) Run() {
 		}
 		cmd := i
 		pf("You chose %q\n", result)
-		for _, p := range ActionPrompts[i].prompts {
+		for _, p := range actionPrompts[i].prompts {
 			_, result, err := p.Run()
 			if err != nil {
 				pf("Prompt failed %v", err)
