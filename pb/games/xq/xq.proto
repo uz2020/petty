@@ -18,7 +18,8 @@ service Game {
   rpc StartGame (StartGameRequest) returns (StartGameResponse) {}
   rpc Move (MoveRequest) returns (MoveResponse) {}
 
-  rpc GetMyProfile (GetMyProfileRequest) returns (GetMyProfileResponse) {}  
+  rpc GetMyProfile (GetMyProfileRequest) returns (GetMyProfileResponse) {}
+  rpc GetPlayer (GetPlayerRequest) returns (GetPlayerResponse) {}  
 }
 
 message LogoutRequest {}
@@ -101,5 +102,14 @@ message Player {
 
 message GetMyProfileRequest {}
 message GetMyProfileResponse {
+  Player player = 1;
+}
+
+
+
+message GetPlayerRequest {
+  string userId = 1;
+}
+message GetPlayerResponse {
   Player player = 1;
 }

@@ -307,6 +307,33 @@ func (gs *GameServer) GetMyProfile(ctx context.Context, in *pb.GetMyProfileReque
 	return out, nil
 }
 
+func (gs *GameServer) GetPlayer(ctx context.Context, in *pb.GetPlayerRequest) (*pb.GetPlayerResponse, error) {
+	player := &Player{}
+	if err := gs.auth(ctx, player); err != nil {
+		return nil, err
+	}
+
+	user := db.TbUser{}
+	userId := in.UserId
+	result := gs.dbConn.First(&user, "user_id = ?", userId)
+
+	err := result.Error
+	if err != nil {
+		return nil, grpc.Errorf(codes.Internal, "db error %v", err)
+	}
+
+	out := &pb.GetPlayerResponse{
+		Player: &pb.Player{
+			User: &pb.User{
+				UserId:   user.UserId,
+				Username: user.Username,
+			},
+		},
+	}
+
+	return out, nil
+}
+
 func (*GameServer) Shutdown(ctx context.Context) error {
 	return nil
 }

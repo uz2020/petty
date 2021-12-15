@@ -78,6 +78,7 @@ const (
 	ActionTypeGetTables
 	ActionTypeStatus
 	ActionTypeMyProfile
+	ActionTypeGetPlayer
 )
 
 var actionTypes = []string{
@@ -92,6 +93,7 @@ var actionTypes = []string{
 	ActionTypeGetTables:   "get tables",
 	ActionTypeStatus:      "status",
 	ActionTypeMyProfile:   "my profile",
+	ActionTypeGetPlayer:   "get player",
 }
 
 var ActionPrompts = []ActionPrompt{
@@ -159,6 +161,16 @@ var ActionPrompts = []ActionPrompt{
 	{},
 	// my profile
 	{},
+	// get player
+	{
+		prompts: []Prompter{
+			Prompt{
+				promptui.Prompt{
+					Label: "Player User Id",
+				},
+			},
+		},
+	},
 }
 
 func NewClient(ctx context.Context) *Client {
@@ -264,6 +276,17 @@ func statusStream(cli *Client, argv []string) {
 	pf("status stream established")
 }
 
+func getPlayer(cli *Client, argv []string) {
+	userId := argv[0]
+	resp, err := cli.gc.GetPlayer(cli.ctx, &pb.GetPlayerRequest{UserId: userId})
+	if err != nil {
+		pl("get player err", err)
+		return
+	}
+
+	pf("player user id: %s, username: %s", resp.Player.User.UserId, resp.Player.User.Username)
+}
+
 func (cli *Client) handleCmd(act Action) {
 	cmd := act.cmd
 	argv := act.argv
@@ -296,6 +319,8 @@ func (cli *Client) handleCmd(act Action) {
 		}
 	case ActionTypeStatus:
 		statusStream(cli, argv)
+	case ActionTypeGetPlayer:
+		getPlayer(cli, argv)
 	}
 }
 
