@@ -19,7 +19,12 @@ service Game {
   rpc Move (MoveRequest) returns (MoveResponse) {}
 
   rpc GetMyProfile (GetMyProfileRequest) returns (GetMyProfileResponse) {}
-  rpc GetPlayer (GetPlayerRequest) returns (GetPlayerResponse) {}  
+  rpc GetPlayer (GetPlayerRequest) returns (GetPlayerResponse) {}
+
+  rpc MakeFriend (MakeFriendRequest) returns (MakeFriendResponse) {} // 请求添加好友
+  rpc AcceptFriend (AcceptFriendRequest) returns (AcceptFriendResponse) {} // 接受添加好友申请
+  rpc StarPlayer (StarPlayerRequest) returns (StarPlayerResponse) {} // 关注用户
+  rpc DeleteFriend (DeleteFriendRequest) returns (DeleteFriendResponse) {} // 删除好友
 }
 
 message LogoutRequest {}
@@ -105,11 +110,31 @@ message GetMyProfileResponse {
   Player player = 1;
 }
 
-
-
 message GetPlayerRequest {
   string userId = 1;
 }
 message GetPlayerResponse {
   Player player = 1;
 }
+
+message MakeFriendRequest {
+  string userId = 1;
+  string reqMsg =2;
+}
+message MakeFriendResponse {}
+
+message AcceptFriendRequest {
+  string userId = 1;
+}
+message AcceptFriendResponse {}
+
+
+message StarPlayerRequest {
+  string userId = 1;
+}
+message StarPlayerResponse {}
+
+message DeleteFriendRequest {
+  string userId = 1;
+}
+message DeleteFriendResponse {}

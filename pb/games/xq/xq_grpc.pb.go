@@ -31,6 +31,10 @@ type GameClient interface {
 	Move(ctx context.Context, in *MoveRequest, opts ...grpc.CallOption) (*MoveResponse, error)
 	GetMyProfile(ctx context.Context, in *GetMyProfileRequest, opts ...grpc.CallOption) (*GetMyProfileResponse, error)
 	GetPlayer(ctx context.Context, in *GetPlayerRequest, opts ...grpc.CallOption) (*GetPlayerResponse, error)
+	MakeFriend(ctx context.Context, in *MakeFriendRequest, opts ...grpc.CallOption) (*MakeFriendResponse, error)
+	AcceptFriend(ctx context.Context, in *AcceptFriendRequest, opts ...grpc.CallOption) (*AcceptFriendResponse, error)
+	StarPlayer(ctx context.Context, in *StarPlayerRequest, opts ...grpc.CallOption) (*StarPlayerResponse, error)
+	DeleteFriend(ctx context.Context, in *DeleteFriendRequest, opts ...grpc.CallOption) (*DeleteFriendResponse, error)
 }
 
 type gameClient struct {
@@ -181,6 +185,42 @@ func (c *gameClient) GetPlayer(ctx context.Context, in *GetPlayerRequest, opts .
 	return out, nil
 }
 
+func (c *gameClient) MakeFriend(ctx context.Context, in *MakeFriendRequest, opts ...grpc.CallOption) (*MakeFriendResponse, error) {
+	out := new(MakeFriendResponse)
+	err := c.cc.Invoke(ctx, "/xq.Game/MakeFriend", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *gameClient) AcceptFriend(ctx context.Context, in *AcceptFriendRequest, opts ...grpc.CallOption) (*AcceptFriendResponse, error) {
+	out := new(AcceptFriendResponse)
+	err := c.cc.Invoke(ctx, "/xq.Game/AcceptFriend", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *gameClient) StarPlayer(ctx context.Context, in *StarPlayerRequest, opts ...grpc.CallOption) (*StarPlayerResponse, error) {
+	out := new(StarPlayerResponse)
+	err := c.cc.Invoke(ctx, "/xq.Game/StarPlayer", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *gameClient) DeleteFriend(ctx context.Context, in *DeleteFriendRequest, opts ...grpc.CallOption) (*DeleteFriendResponse, error) {
+	out := new(DeleteFriendResponse)
+	err := c.cc.Invoke(ctx, "/xq.Game/DeleteFriend", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // GameServer is the server API for Game service.
 // All implementations must embed UnimplementedGameServer
 // for forward compatibility
@@ -198,6 +238,10 @@ type GameServer interface {
 	Move(context.Context, *MoveRequest) (*MoveResponse, error)
 	GetMyProfile(context.Context, *GetMyProfileRequest) (*GetMyProfileResponse, error)
 	GetPlayer(context.Context, *GetPlayerRequest) (*GetPlayerResponse, error)
+	MakeFriend(context.Context, *MakeFriendRequest) (*MakeFriendResponse, error)
+	AcceptFriend(context.Context, *AcceptFriendRequest) (*AcceptFriendResponse, error)
+	StarPlayer(context.Context, *StarPlayerRequest) (*StarPlayerResponse, error)
+	DeleteFriend(context.Context, *DeleteFriendRequest) (*DeleteFriendResponse, error)
 	mustEmbedUnimplementedGameServer()
 }
 
@@ -243,6 +287,18 @@ func (UnimplementedGameServer) GetMyProfile(context.Context, *GetMyProfileReques
 }
 func (UnimplementedGameServer) GetPlayer(context.Context, *GetPlayerRequest) (*GetPlayerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPlayer not implemented")
+}
+func (UnimplementedGameServer) MakeFriend(context.Context, *MakeFriendRequest) (*MakeFriendResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MakeFriend not implemented")
+}
+func (UnimplementedGameServer) AcceptFriend(context.Context, *AcceptFriendRequest) (*AcceptFriendResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AcceptFriend not implemented")
+}
+func (UnimplementedGameServer) StarPlayer(context.Context, *StarPlayerRequest) (*StarPlayerResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StarPlayer not implemented")
+}
+func (UnimplementedGameServer) DeleteFriend(context.Context, *DeleteFriendRequest) (*DeleteFriendResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteFriend not implemented")
 }
 func (UnimplementedGameServer) mustEmbedUnimplementedGameServer() {}
 
@@ -494,6 +550,78 @@ func _Game_GetPlayer_Handler(srv interface{}, ctx context.Context, dec func(inte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Game_MakeFriend_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MakeFriendRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GameServer).MakeFriend(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/xq.Game/MakeFriend",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GameServer).MakeFriend(ctx, req.(*MakeFriendRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Game_AcceptFriend_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AcceptFriendRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GameServer).AcceptFriend(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/xq.Game/AcceptFriend",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GameServer).AcceptFriend(ctx, req.(*AcceptFriendRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Game_StarPlayer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StarPlayerRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GameServer).StarPlayer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/xq.Game/StarPlayer",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GameServer).StarPlayer(ctx, req.(*StarPlayerRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Game_DeleteFriend_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteFriendRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GameServer).DeleteFriend(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/xq.Game/DeleteFriend",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GameServer).DeleteFriend(ctx, req.(*DeleteFriendRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Game_ServiceDesc is the grpc.ServiceDesc for Game service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -548,6 +676,22 @@ var Game_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetPlayer",
 			Handler:    _Game_GetPlayer_Handler,
+		},
+		{
+			MethodName: "MakeFriend",
+			Handler:    _Game_MakeFriend_Handler,
+		},
+		{
+			MethodName: "AcceptFriend",
+			Handler:    _Game_AcceptFriend_Handler,
+		},
+		{
+			MethodName: "StarPlayer",
+			Handler:    _Game_StarPlayer_Handler,
+		},
+		{
+			MethodName: "DeleteFriend",
+			Handler:    _Game_DeleteFriend_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

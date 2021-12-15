@@ -56,3 +56,4 @@ sh run-cli.sh
 5. recent logs, common logs
 6. counters, statistics
 7. distributed locks
+8. 好友关系
