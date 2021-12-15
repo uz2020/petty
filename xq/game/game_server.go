@@ -231,20 +231,6 @@ func (gs *GameServer) Logout(ctx context.Context, in *pb.LogoutRequest) (*pb.Log
 	return out, nil
 }
 
-// 建立流推送
-func (gs *GameServer) MyStatus(r *pb.MyStatusRequest, srv pb.Game_MyStatusServer) error {
-	ctx := srv.Context()
-	player := &Player{}
-
-	if err := gs.auth(ctx, player); err != nil {
-		return err
-	}
-
-	gs.playerSrvs[player.user.UserId] = srv
-
-	return nil
-}
-
 func (gs *GameServer) JoinTable(ctx context.Context, in *pb.JoinTableRequest) (*pb.JoinTableResponse, error) {
 	player := &Player{}
 	out := &pb.JoinTableResponse{}

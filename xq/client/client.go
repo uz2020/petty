@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/spf13/viper"
 	pb "github.com/uz2020/petty/pb/games/xq"
@@ -272,16 +273,6 @@ func myProfile(cli *Client, argv []string) {
 	pl("----------------------------")
 }
 
-func statusStream(cli *Client, argv []string) {
-	stream, err := cli.gc.MyStatus(cli.ctx, &pb.MyStatusRequest{})
-	if err != nil {
-		pf("status stream failed %v", err)
-		return
-	}
-	cli.ss = stream
-	pf("status stream established")
-}
-
 func getPlayer(cli *Client, argv []string) {
 	userId := argv[0]
 	resp, err := cli.gc.GetPlayer(cli.ctx, &pb.GetPlayerRequest{UserId: userId})
@@ -383,6 +374,8 @@ func (cli *Client) Run() {
 			resp, err := cli.gc.GetMyProfile(cli.ctx, &pb.GetMyProfileRequest{})
 			if err != nil {
 				pf("get profile failed %v", err)
+				time.Sleep(time.Second)
+				continue
 			}
 			cli.player = resp.Player
 
