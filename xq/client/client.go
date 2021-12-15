@@ -276,6 +276,7 @@ func statusStream(cli *Client, argv []string) {
 	stream, err := cli.gc.MyStatus(cli.ctx, &pb.MyStatusRequest{})
 	if err != nil {
 		pf("status stream failed %v", err)
+		return
 	}
 	cli.ss = stream
 	pf("status stream established")

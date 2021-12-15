@@ -38,6 +38,12 @@ type Player struct {
 	md   metadata.MD
 }
 
+func GetUser(d *gorm.DB, userId string) (*db.TbUser, error) {
+	user := &db.TbUser{}
+	result := d.First(user, "user_id = ?", userId)
+	return user, result.Error
+}
+
 func (gs *GameServer) init(ctx context.Context) {
 	gs.ctx = ctx
 	gs.playerSrvs = make(map[string]pb.Game_MyStatusServer)
