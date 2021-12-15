@@ -318,12 +318,21 @@ func (*cred) RequireTransportSecurity() bool {
 }
 
 func (cli *Client) Run() {
-	configPath := "cli-config.yaml"
-	viper.SetConfigName(configPath)
+	configPath := "cli-config"
 	viper.AddConfigPath("./")
-	viper.ReadInConfig()
+	viper.SetConfigName(configPath)
+	viper.SetConfigType("json")
+	if err := viper.ReadInConfig(); err != nil {
+		pf("read in config failed: %v", err)
+		err := viper.SafeWriteConfig()
+		if err != nil {
+			pf("write config failed %s", err)
+			return
+		}
+		pf("config file created")
+	}
 	defer func() {
-		err := viper.WriteConfigAs(configPath)
+		err := viper.WriteConfig()
 		if err != nil {
 			pf("write config failed %s", err)
 		}
@@ -368,7 +377,9 @@ func (cli *Client) Run() {
 	}
 
 	for {
-		if viper.GetString("token") != "" && cli.player == nil {
+		token := viper.GetString("token")
+		if token != "" && cli.player == nil {
+			pf("token loaded %v, getting profile...", token)
 			resp, err := cli.gc.GetMyProfile(cli.ctx, &pb.GetMyProfileRequest{})
 			if err != nil {
 				pf("get profile failed %v", err)

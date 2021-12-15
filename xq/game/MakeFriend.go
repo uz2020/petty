@@ -3,8 +3,10 @@ package game
 import (
 	"context"
 	"fmt"
+	"time"
 
 	pb "github.com/uz2020/petty/pb/games/xq"
+	"github.com/uz2020/petty/xq/db"
 )
 
 func (gs *GameServer) MakeFriend(ctx context.Context, in *pb.MakeFriendRequest) (*pb.MakeFriendResponse, error) {
@@ -23,5 +25,12 @@ func (gs *GameServer) MakeFriend(ctx context.Context, in *pb.MakeFriendRequest) 
 
 	fmt.Println("user id", user.UserId)
 
-	return out, nil
+	o := db.TbMakeFriend{
+		FromUserId: player.user.UserId,
+		ToUserId:   user.UserId,
+		CreatedAt:  time.Now(),
+	}
+
+	res := gs.dbConn.Create(&o)
+	return out, res.Error
 }
