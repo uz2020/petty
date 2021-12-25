@@ -84,7 +84,7 @@ var actionPrompts = []ActionPrompt{
 				},
 			},
 		},
-		f: actionHandlerStub,
+		f: register,
 	},
 	{
 		name: "login",
