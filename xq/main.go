@@ -7,5 +7,6 @@ import (
 
 func main() {
 	fmt.Println("good")
+	print(1)
 	cmd.Execute()
 }
